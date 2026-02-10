@@ -1876,8 +1876,37 @@ async function doLogin(){
   if(!authRes.ok){ toast("Supabase login failed", authRes.message); await updateOnlineBadge(); return; }
   await updateOnlineBadge();
 
-  const user = state.users.find(u=>u.email===email);
-  if(!user){ toast("Invalid login","User not found. Ask Corporate to create access."); return; }
+  // If not found in internal list, try Supabase Auth instead
+if (!user) {
+  // 1) Try Supabase email/password login
+  const { data, error } = await window.supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    showToast("Invalid login", error.message || "Supabase login failed");
+    return;
+  }
+
+  // 2) Supabase login OK → create a session role for the app
+  //    (adjust roles as you want)
+  const role = email.toLowerCase().includes("tanmoy.ghosh@globsyn.edu.in")
+    ? "corporate"
+    : "faculty";
+
+  setSession({
+    email,
+    role,
+    supabaseUserId: data.user?.id || null
+  });
+
+  // hide login modal / refresh UI
+  closeLoginModal?.();
+  renderApp?.();
+  return;
+}
+}
 
   const h = await sha256(pass);
   if(h !== user.passHash){ toast("Invalid login","Incorrect password"); return; }
