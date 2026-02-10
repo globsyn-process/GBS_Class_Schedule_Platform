@@ -1,0 +1,4762 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GBS Class Schedule Platform</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#e8edf7;
+      --muted:#a8b3cf;
+      --accent:#4aa3ff;
+      --accent2:#7c5cff;
+      --danger:#ff4d6d;
+      --ok:#2dd4bf;
+      --warn:#fbbf24;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 10px 30px rgba(0,0,0,.30);
+      --radius:18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
+    }
+    *{box-sizing:border-box}
+    html, body{overflow-x:hidden;}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(74,163,255,.25), transparent 60%),
+                  radial-gradient(900px 500px at 90% 10%, rgba(124,92,255,.22), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"Globsyn Business School";
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:72px;
+      font-weight:950;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.03);
+      transform:rotate(-18deg);
+      pointer-events:none;
+      z-index:0;
+      user-select:none;
+      text-align:center;
+      padding: 0 18px;
+      white-space:nowrap;
+    }
+    .wrap, .toast{ position:relative; z-index:1; }
+
+    .wrap{max-width:1400px; margin:0 auto; padding:22px;}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; padding:14px 16px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      position:sticky; top:12px; z-index:10;
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex; align-items:center; gap:12px; min-width:280px;}
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      background: rgba(255,255,255,.08);
+      border:1px solid var(--line);
+      overflow:hidden;
+      display:grid; place-items:center;
+      flex:0 0 auto;
+    }
+    .logo img{width:100%; height:100%; object-fit:cover}
+    .brand h1{font-size:15px; margin:0; line-height:1.15}
+    .brand p{margin:0; color:var(--muted); font-size:12px}
+    .brandInline{
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.80);
+    }
+
+    .rightinfo{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{
+      padding:8px 10px; border:1px solid var(--line);
+      border-radius:999px; background:rgba(255,255,255,.05);
+      color:var(--muted); font-size:12px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      font-weight:600;
+      font-size:13px;
+    }
+    .btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.09)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(74,163,255,.95), rgba(124,92,255,.85));
+      border-color:transparent;
+    }
+    .btn.danger{background: rgba(255,77,109,.15); border-color:rgba(255,77,109,.35); color:#ffd4dc}
+    .btn.ok{background: rgba(45,212,191,.12); border-color:rgba(45,212,191,.35); color:#bff7ef}
+    .btn.small{padding:7px 9px; border-radius:10px; font-size:12px}
+
+    .grid{
+      display:grid;
+      min-width:0;
+      grid-template-columns: 280px 1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    .grid > *{min-width:0;}
+    .main{min-width:0;}
+
+    .sidebar{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      height: calc(100vh - 120px);
+      position:sticky; top:92px;
+      overflow:auto;
+    }
+    .nav h3{margin:10px 8px 8px; font-size:12px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.08em;}
+    .nav button{
+      width:100%;
+      text-align:left;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+      font-weight:700;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+    }
+    .nav button:hover{background:rgba(255,255,255,.05)}
+    .nav button.active{
+      background:rgba(74,163,255,.16);
+      border-color:rgba(74,163,255,.35);
+    }
+    .nav small{color:var(--muted); font-weight:700}
+    .main{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      min-height: calc(100vh - 120px);
+    }
+
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+    .spacer{flex:1}
+    .divider{height:1px; background:var(--line); margin:14px 0}
+
+    .cards{display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:12px; margin-top:12px}
+    @media (max-width:1100px){ .cards{grid-template-columns: repeat(2,1fr)} .grid{grid-template-columns:1fr} .sidebar{position:relative; height:auto; top:auto} }
+    @media (max-width:520px){ .cards{grid-template-columns:1fr} }
+
+    .card{
+      background:rgba(16,26,51,.55);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.22);
+    }
+    .card h2{margin:0 0 6px; font-size:13px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.06em}
+    .big{font-size:24px; font-weight:900; margin:0}
+    .muted{color:var(--muted)}
+    .hint{font-size:12px; color:var(--muted); margin-top:8px}
+    .sectionTitle{display:flex; align-items:end; justify-content:space-between; gap:10px; margin-top:8px}
+    .sectionTitle h2{margin:0; font-size:18px}
+    .sectionTitle p{margin:0; color:var(--muted); font-size:12px}
+
+    table{
+      width:100%;
+      table-layout:fixed;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(16,26,51,.45);
+    }
+    th, td{
+      padding:10px 10px;
+      word-break:break-word;
+      overflow-wrap:anywhere;
+      font-size:12.5px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+    }
+    th{
+      text-align:left;
+      color:#d8e2ff;
+      background:rgba(255,255,255,.05);
+      font-size:12px;
+      letter-spacing:.03em;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    tr:last-child td{border-bottom:none}
+
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 8px; border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      font-size:12px; color:var(--muted); font-weight:800;
+      white-space:nowrap;
+    }
+    .tag.ok{border-color:rgba(45,212,191,.35); background:rgba(45,212,191,.12); color:#bff7ef}
+    .tag.warn{border-color:rgba(251,191,36,.35); background:rgba(251,191,36,.12); color:#ffe7b0}
+    .tag.danger{border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.12); color:#ffd1da}
+
+    .form{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (max-width:1100px){ .form{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:520px){ .form{grid-template-columns:1fr} }
+
+    label{display:block; font-size:12px; color:var(--muted); font-weight:800; margin:0 0 6px}
+    input, select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:40px; resize:vertical}
+
+    /* Login */
+    #loginScreen{display:none; min-height: calc(100vh - 44px); padding-top:40px;}
+    .loginCard{
+      width:min(600px, 100%);
+      margin: 0 auto;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(16,26,51,.95), rgba(10,16,30,.95));
+      border-radius:20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,.5);
+      padding:16px;
+    }
+    .brandNameBig{
+      font-size: 28px;
+      font-weight: 950;
+      letter-spacing: .2px;
+      margin: 0 0 4px 0;
+      line-height: 1.05;
+      background: linear-gradient(135deg, rgba(74,163,255,.95), rgba(124,92,255,.85));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .brandSubText{ margin:0; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width:520px){ .two{grid-template-columns:1fr} }
+    .footNote{font-size:11.5px; color:var(--muted); margin-top:10px}
+
+    /* Charts */
+    .chartGrid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    @media (max-width:1100px){ .chartGrid{ grid-template-columns:1fr; } }
+    .chartCard{
+      background:rgba(16,26,51,.55);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.22);
+    }
+    .chartHead{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:8px;
+    }
+    .chartHead h3{
+      margin:0;
+      font-size:13px;
+      color:var(--muted);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .chartHint{ color:var(--muted); font-size:12px; }
+    .canvasWrap{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:10px;
+      overflow:hidden;
+    }
+    canvas{ width:100%; height:280px; display:block; }
+    .smallNote{font-size:11.5px; color:var(--muted); margin-top:8px;}
+
+    /* Scheduler Grid */
+    .schedWrap{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:12px;
+      overflow:auto;
+    }
+    .schedTable th, .schedTable td{min-width:190px}
+    .schedTable td{vertical-align:middle}
+    .cellHead{
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+    }
+    .cellMeta{
+      font-size:11.5px; color:var(--muted); margin-top:4px;
+    }
+    .miniSelect{
+      width:100%;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      outline:none;
+      font-size:12.5px;
+    }
+    .lunchCol{
+      background:rgba(251,191,36,.08);
+    }
+    .disabledNote{
+      font-size:11.5px; color:rgba(168,179,207,.85); margin-top:6px;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed; right:18px; bottom:18px;
+      background:rgba(16,26,51,.95);
+      border:1px solid var(--line);
+      padding:10px 12px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      display:none;
+      max-width:520px;
+      z-index:100;
+    }
+    .toast strong{display:block; font-size:13px}
+    .toast span{display:block; font-size:12px; color:var(--muted); margin-top:2px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">
+          <span style="color:var(--muted); font-weight:900; font-size:12px;">GBS</span>
+        </div>
+        <div>
+          <div class="brandInline">Globsyn Business School</div>
+          <h1 style="margin-top:4px;">Daily / Weekly Class Schedule Platform</h1>
+          <p id="subtitle">Roster • Faculty View • Course Completion • Conflict Checks</p>
+        </div>
+      </div>
+
+      <div class="rightinfo">
+        <div class="pill" id="whoami">Not logged in</div>
+        <button class="btn danger" id="btnLogout" style="display:none;">Logout</button>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <section id="loginScreen">
+      <div class="loginCard">
+        <div style="margin-bottom:6px;">
+          <div class="brandNameBig">Globsyn Business School</div>
+          <p class="brandSubText">Class Schedule Preparation & Tracking</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2 style="margin:0;">Login</h2>
+        <p class="muted" style="margin:6px 0 0;">Please login to access the platform</p>
+
+        <div class="divider"></div>
+
+        <div class="two">
+          <div>
+            <label>Email</label>
+            <input id="loginEmail" placeholder="e.g., faculty@globsyn.edu.in"/>
+          </div>
+          <div>
+            <label>Password</label>
+            <input id="loginPass" type="password" placeholder="Enter password"/>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn primary" id="btnDoLogin">Login</button>
+          <div class="spacer"></div>
+          <span class="hint">Default Corporate: <b>corporate@local</b> / <b>1234</b></span>
+        </div>
+
+        <p id="modeHint" class="footNote">
+          Corporate can create Faculty users from Users tab after login. Faculty role gets Dashboard + Roster view.
+        </p>
+      </div>
+    </section>
+
+    <!-- APP -->
+    <section id="appShell" style="display:none;">
+      <div class="grid">
+        <aside class="sidebar">
+          <div class="nav">
+            <h3>Navigation</h3>
+            <button data-tab="dashboard" class="active">Dashboard <small>View</small></button>
+            <button data-tab="roster">Roster <small>Date Range</small></button>
+            <button data-tab="builder">Schedule Builder <small>Create</small></button>
+                        <button data-tab="publish">View &amp; Publish <small>Draft/PDF</small></button>
+<button data-tab="mapping">Faculty Mapping <small>CSV</small></button>
+            <button data-tab="bulk">Bulk Upload <small>Schedule CSV</small></button>
+            <button data-tab="users">Users <small>Access</small></button>
+            <button data-tab="settings">Settings <small>Timings/Rooms</small></button>
+            <button data-tab="dev">Development <small>Tools</small></button>
+          </div>
+
+          <div class="divider"></div>
+          <div class="hint">
+            <span id="modeTag" class="tag warn">Offline Mode</span>
+            <p class="footNote">
+              Data is stored in this browser. For multi-user real-time scheduling, convert to Google Apps Script + Sheets.
+            </p>
+          </div>
+        </aside>
+
+        <main class="main">
+
+          <!-- DASHBOARD -->
+          <section id="tab-dashboard">
+            <div class="sectionTitle">
+              <div>
+                <h2>Dashboard</h2>
+                <p>Quick stats + completion + conflicts</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnRefreshDash">Refresh</button>
+                <span class="tag" id="dashScopeTag">Scope: All</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Quick Filters</h2>
+              <div class="form">
+                <div>
+                  <label>Program</label>
+                  <select id="dProgram"></select>
+                </div>
+                <div>
+                  <label>Semester</label>
+                  <select id="dSemester">
+                    <option value="">All</option>
+                    <option value="1">Sem I</option>
+                    <option value="2">Sem II</option>
+                    <option value="3">Sem III</option>
+                    <option value="4">Sem IV</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Section</label>
+                  <select id="dSection"></select>
+                </div>
+                <div>
+                  <label>Faculty (optional)</label>
+                  <select id="dFaculty"></select>
+                </div>
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnApplyDashFilters">Apply</button>
+                <button class="btn" id="btnClearDashFilters">Clear</button>
+                <div class="spacer"></div>
+                <span class="hint">Faculty login auto-scopes to their classes.</span>
+              </div>
+            </div>
+
+            <div class="cards">
+              <div class="card">
+                <h2>Scheduled Classes (Selected)</h2>
+                <p class="big" id="statClasses">0</p>
+                <p class="muted">Total sessions in scope</p>
+              </div>
+              <div class="card">
+                <h2>Active Courses (Selected)</h2>
+                <p class="big" id="statCourses">0</p>
+                <p class="muted">Unique course codes</p>
+              </div>
+              <div class="card">
+                <h2>Completion (Avg)</h2>
+                <p class="big" id="statCompletion">0%</p>
+                <p class="muted">Delivered vs planned</p>
+              </div>
+              <div class="card">
+                <h2>Conflicts</h2>
+                <p class="big" id="statConflicts">0</p>
+                <p class="muted">Faculty/Room clashes</p>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="chartGrid">
+              <div class="chartCard">
+                <div class="chartHead">
+                  <h3>Delivered vs Pending (Bar)</h3>
+                  <span class="chartHint">Click a bar to filter completion table</span>
+                </div>
+                <div class="canvasWrap">
+                  <canvas id="barDelivered" width="900" height="280"></canvas>
+                </div>
+                <div class="smallNote">Based on planned course sessions in Mapping CSV.</div>
+              </div>
+
+              <div class="chartCard">
+                <div class="chartHead">
+                  <h3>Completion Buckets (Donut)</h3>
+                  <span class="chartHint">Click a slice to filter completion table</span>
+                </div>
+                <div class="canvasWrap">
+                  <canvas id="pieCompletion" width="600" height="280"></canvas>
+                </div>
+                <div class="smallNote">0–49%, 50–79%, 80–99%, 100% completion</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="sectionTitle">
+              <div>
+                <h2>Course Completion (Semester / Program / Section)</h2>
+                <p>Shows delivered sessions vs planned sessions</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnExportCompletionCsv">Export CSV</button>
+                <span class="tag warn" id="completionFilterTag" style="display:none;"></span>
+              </div>
+            </div>
+
+            <div style="overflow:auto; margin-top:10px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Program</th>
+                    <th>Sem</th>
+                    <th>Section</th>
+                    <th>Course</th>
+                    <th>Faculty</th>
+                    <th>Planned Sessions</th>
+                    <th>Delivered Sessions</th>
+                    <th>Completion</th>
+                  </tr>
+                </thead>
+                <tbody id="completionBody"></tbody>
+              </table>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="sectionTitle">
+              <div>
+                <h2>Conflicts (Top 50)</h2>
+                <p>Faculty double-booking / Room overlaps (same date & time)</p>
+              </div>
+            </div>
+
+            <div style="overflow:auto; margin-top:10px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Entity</th>
+                    <th>Sessions</th>
+                  </tr>
+                </thead>
+                <tbody id="conflictBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ROSTER VIEW -->
+          <section id="tab-roster" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>Roster View</h2>
+                <p>Faculty / Program roster for selected date range</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnRosterToday">Today</button>
+                <button class="btn" id="btnRosterWeek">This Week</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Roster Filters</h2>
+              <div class="form">
+                <div>
+                  <label>From Date</label>
+                  <input type="date" id="rFrom"/>
+                </div>
+                <div>
+                  <label>To Date</label>
+                  <input type="date" id="rTo"/>
+                </div>
+                <div>
+                  <label>Program</label>
+                  <select id="rProgram"></select>
+                </div>
+                <div>
+                  <label>Semester</label>
+                  <select id="rSemester">
+                    <option value="">All</option>
+                    <option value="1">Sem I</option>
+                    <option value="2">Sem II</option>
+                    <option value="3">Sem III</option>
+                    <option value="4">Sem IV</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Section</label>
+                  <select id="rSection"></select>
+                </div>
+                <div>
+                  <label>Faculty</label>
+                  <select id="rFaculty"></select>
+                </div>
+                <div>
+                  <label>Room</label>
+                  <select id="rRoom"></select>
+                </div>
+                <div>
+                  <label>View Mode</label>
+                  <select id="rViewMode">
+                    <option value="day">Day-wise</option>
+                    <option value="grid">Time Grid</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnRenderRoster">Render</button>
+                <button class="btn" id="btnClearRoster">Clear</button>
+                <button class="btn" id="btnExportRosterCsv">Export CSV</button>
+                <div class="spacer"></div>
+                <span class="tag ok" id="rosterCountTag">0 sessions</span>
+              </div>
+              <p class="hint">Lunch slot is shown automatically based on Settings.</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div id="rosterOutput"></div>
+          </section>
+
+          <!-- SCHEDULE BUILDER (REDESIGNED) -->
+          <section id="tab-builder" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>Schedule Builder</h2>
+                <p>Pick Date + Semester, then assign courses per Program/Section/Room using predefined timings (Corporate only)</p>
+              </div>
+              <div class="row">
+                <span class="tag warn">Corporate only</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Builder Filters</h2>
+              <div class="form">
+                <div>
+                  <label>Date</label>
+                  <input type="date" id="sbDate"/>
+                </div>
+                <div>
+                  <label>Semester</label>
+                  <select id="sbSemester">
+                    <option value="1">Sem I</option>
+                    <option value="2">Sem II</option>
+                    <option value="3">Sem III</option>
+                    <option value="4">Sem IV</option>
+                  </select>
+                </div>
+                <div style="grid-column: span 2;">
+                  <label>Remarks (optional, applied to edited cells)</label>
+                  <input id="sbRemarks" placeholder="e.g., Guest lecture / Quiz / Make-up class"/>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnRenderBuilderGrid">Load Grid</button>
+                <button class="btn" id="btnClearBuilderGrid">Clear selections (this date+sem)</button>
+                <div class="spacer"></div>
+                <span class="tag ok" id="sbCountTag">0 sessions</span>
+              </div>
+
+              <p class="hint" style="margin-top:10px;">
+                Rules: (1) Timings are taken from Settings (gap applied between classes, no gap around Lunch). (2) A faculty cannot be assigned twice in the same period on the same date. (3) Room conflicts are blocked for same period on same date.
+              </p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card">
+              <h2>Schedule Grid</h2>
+              <p class="hint" style="margin:0;">
+                Each cell shows Course dropdown (from Mapping). Faculty will auto-attach based on mapping.
+                If a faculty is already booked in that period, the option will appear disabled.
+              </p>
+              <div class="divider"></div>
+              <div class="schedWrap" id="sbGridWrap">
+                <div class="muted">Click “Load Grid” to render.</div>
+              </div>
+            </div>
+
+              <div class="row" style="margin-top:12px;">
+                <button class="btn primary" id="btnSaveScheduleDraft">Save Schedule (Draft)</button>
+                <button class="btn" id="btnGoToPublish">Go to View &amp; Publish</button>
+                <div class="spacer"></div>
+                <span class="hint">Saves a snapshot for this date + semester (for editing / PDF publishing).</span>
+              </div>
+
+
+            <div class="divider"></div>
+
+            <div class="sectionTitle">
+              <div>
+                <h2>Sessions List (Latest 200)</h2>
+                <p>Delete sessions (Corporate / Registrar)</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnExportAllSessionsCsv">Export All Sessions CSV</button>
+              </div>
+            </div>
+
+            <div style="overflow:auto; margin-top:10px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Program</th>
+                    <th>Sem</th>
+                    <th>Section</th>
+                    <th>Course</th>
+                    <th>Faculty</th>
+                    <th>Room</th>
+                    <th>Remarks</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="sessionsBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          
+          <!-- VIEW & PUBLISH SCHEDULE -->
+          <section id="tab-publish" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>View &amp; Publish Schedule</h2>
+                <p>Saved drafts for future reference, editing, and PDF publishing</p>
+              </div>
+              <div class="row">
+                <span class="tag ok">Registrar / Corporate</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Saved Schedules</h2>
+              <p class="hint" style="margin:0;">Save a draft from Schedule Builder. Then edit or publish from here.</p>
+              <div class="divider"></div>
+
+              <div class="form">
+                <div>
+                  <label>From Date</label>
+                  <input type="date" id="vpFrom"/>
+                </div>
+                <div>
+                  <label>To Date</label>
+                  <input type="date" id="vpTo"/>
+                </div>
+                <div>
+                  <label>Semester</label>
+                  <select id="vpSemester">
+                    <option value="">All</option>
+                    <option value="1">Sem I</option>
+                    <option value="2">Sem II</option>
+                    <option value="3">Sem III</option>
+                    <option value="4">Sem IV</option>
+                  </select>
+                </div>
+                <div style="grid-column: span 2;">
+                  <label>Search (optional)</label>
+                  <input id="vpSearch" placeholder="e.g., PGDM / Section A / Draft / Published"/>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnVPLoad">Load</button>
+                <button class="btn" id="btnVPPreviewWeek">Preview Week</button>
+                <button class="btn" id="btnVPClear">Clear</button>
+                <div class="spacer"></div>
+                <span class="tag warn" id="vpCountTag">0 schedules</span>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div style="overflow:auto; margin-top:10px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="min-width:140px;">Date</th>
+                    <th>Semester</th>
+                    <th>Status</th>
+                    <th style="min-width:220px;">Saved On</th>
+                    <th>Saved By</th>
+                    <th style="min-width:220px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="vpBody"></tbody>
+              </table>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card" id="vpPreviewCard" style="display:none;">
+              <div class="sectionTitle" style="margin:0;">
+                <div>
+                  <h2 style="margin:0;">Preview</h2>
+                  <p id="vpPreviewHint" class="muted" style="margin-top:6px;">—</p>
+                </div>
+                <div class="row">
+                  <div style="min-width:220px;">
+                    <select id="vpPdfProgram" class="miniSelect" title="PDF Program Scope">
+                      <option value="">All Programs</option>
+                    </select>
+                    <div class="muted" style="font-size:11px; margin-top:4px;">PDF scope</div>
+                  </div>
+                  <button class="btn" id="btnVPPrint">Generate PDF</button>
+                  <button class="btn ok" id="btnVPMarkPublished">Mark as Published</button>
+                  <button class="btn danger" id="btnVPDelete">Delete</button>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="schedWrap" id="vpGridWrap">
+                <div class="muted">—</div>
+              </div>
+            </div>
+          </section>
+
+<!-- FACULTY COURSE MAPPING -->
+          <section id="tab-mapping" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>Faculty–Course Mapping (CSV)</h2>
+                <p>Upload mapping: faculty ↔ course ↔ program/sem/section with planned sessions</p>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Upload Mapping CSV</h2>
+              <p class="hint" style="margin:0;">
+                Mandatory columns: <b>program, semester, section, courseCode, courseName, facultyEmail, facultyName, plannedSessions</b>
+              </p>
+              <div class="divider"></div>
+
+              <div class="row">
+                <button class="btn primary" id="btnDownloadMappingTemplate">Download Mapping Template</button>
+                <input type="file" id="mappingFile" accept=".csv,text/csv"/>
+                <button class="btn" id="btnUploadMapping">Upload Mapping CSV</button>
+                <button class="btn danger" id="btnClearMapping">Clear Mapping</button>
+                <div class="spacer"></div>
+                <span class="tag ok" id="mappingCountTag">0 rows</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px; display:none;" id="mappingEditCard">
+              <h2>Edit Mapping Row</h2>
+              <div class="form">
+                <div>
+                  <label>Program</label>
+                  <input id="meProgram" disabled/>
+                </div>
+                <div>
+                  <label>Semester</label>
+                  <input id="meSemester" disabled/>
+                </div>
+                <div>
+                  <label>Section</label>
+                  <input id="meSection" disabled/>
+                </div>
+                <div>
+                  <label>Course Code</label>
+                  <input id="meCourseCode" disabled/>
+                </div>
+                <div style="grid-column: span 2;">
+                  <label>Course Name</label>
+                  <input id="meCourseName"/>
+                </div>
+                <div>
+                  <label>Faculty Email</label>
+                  <input id="meFacultyEmail"/>
+                </div>
+                <div>
+                  <label>Faculty Name</label>
+                  <input id="meFacultyName"/>
+                </div>
+                <div>
+                  <label>Planned Sessions</label>
+                  <input id="mePlanned" type="number" min="0"/>
+                </div>
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnSaveMappingEdit">Save</button>
+                <button class="btn" id="btnCancelMappingEdit">Cancel</button>
+                <div class="spacer"></div>
+                <span class="hint">Edit is program/sem/section/course specific.</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Current Mapping</h2>
+              <p class="hint" style="margin:0;">Edit/Delete per course mapping row.</p>
+              <div class="divider"></div>
+              <div style="overflow:auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Program</th>
+                      <th>Sem</th>
+                      <th>Section</th>
+                      <th>Course</th>
+                      <th>Faculty</th>
+                      <th>Planned Sessions</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mappingBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- BULK SCHEDULE UPLOAD -->
+          <section id="tab-bulk" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>Bulk Upload Schedule (CSV)</h2>
+                <p>Upload many sessions at once (Corporate only)</p>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Bulk Upload</h2>
+              <p class="hint" style="margin:0;">
+                Mandatory columns: <b>date,startTime,endTime,program,semester,section,courseCode,facultyEmail,room</b>
+              </p>
+              <div class="divider"></div>
+
+              <div class="row">
+                <button class="btn primary" id="btnDownloadScheduleTemplate">Download Schedule Template</button>
+                <input type="file" id="bulkFile" accept=".csv,text/csv"/>
+                <button class="btn" id="btnUploadScheduleCsv">Upload Schedule CSV</button>
+                <div class="spacer"></div>
+                <span class="tag warn">Conflicts will be flagged</span>
+              </div>
+
+              <div class="divider"></div>
+              <p id="bulkStatus" class="muted" style="margin:0;">No upload yet</p>
+
+              <div style="overflow:auto; margin-top:10px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Row #</th>
+                      <th>Status</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bulkBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- USERS -->
+          <section id="tab-users" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>User Management</h2>
+                <p>Create users using Email ID and assign role (Corporate only)</p>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Create User</h2>
+              <div class="two">
+                <div>
+                  <label>User Email</label>
+                  <input id="uEmail" placeholder="e.g., faculty@globsyn.edu.in"/>
+                </div>
+                <div>
+                  <label>Role</label>
+                  <select id="uRole">
+                    <option value="faculty">Faculty</option>
+                    <option value="registrar">Registrar's Office</option>
+                    <option value="corporate">Corporate</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="two" style="margin-top:10px;">
+                <div>
+                  <label>Set Password</label>
+                  <input id="uPass" type="password" placeholder="Set a password"/>
+                </div>
+                <div>
+                  <label>Confirm Password</label>
+                  <input id="uPass2" type="password" placeholder="Re-enter password"/>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnCreateUser">Create User</button>
+                <button class="btn" id="btnClearUser">Clear</button>
+                <div class="spacer"></div>
+                <span class="hint">Faculty will see Dashboard + Roster only.</span>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="sectionTitle">
+              <div>
+                <h2>Existing Users</h2>
+                <p>Users stored in this browser</p>
+              </div>
+            </div>
+
+            <div style="overflow:auto; margin-top:10px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created On</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- SETTINGS -->
+          <section id="tab-settings" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>Settings</h2>
+                <p>Pre-defined class timings + lunch + masters + default classroom mapping (Corporate only)</p>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Class Timings (Pre-defined)</h2>
+              <p class="hint" style="margin:0;">
+                Logic: Gap applies <b>between classes only</b>. Lunch starts immediately after chosen period (no gap), and the next class starts immediately after lunch (no gap).
+              </p>
+              <div class="divider"></div>
+
+              <div class="form">
+                <div>
+                  <label>First Period Start</label>
+                  <input type="time" id="setFirstStart"/>
+                </div>
+                <div>
+                  <label>Period Duration (minutes)</label>
+                  <input type="number" id="setPeriodMins" min="30" max="180"/>
+                </div>
+                <div>
+                  <label>Gap Between Classes (minutes)</label>
+                  <input type="number" id="setGapMins" min="0" max="60"/>
+                </div>
+                <div>
+                  <label>Total Class Periods / Day</label>
+                  <input type="number" id="setPeriodsCount" min="1" max="12"/>
+                </div>
+                <div>
+                  <label>Lunch After Period #</label>
+                  <input type="number" id="setLunchAfter" min="0" max="12"/>
+                </div>
+                <div>
+                  <label>Lunch Duration (minutes)</label>
+                  <input type="number" id="setLunchMins" min="30" max="120"/>
+                </div>
+                <div>
+                  <label>Working Days</label>
+                  <select id="setWorkingDays" multiple size="4">
+                    <option value="1">Mon</option>
+                    <option value="2">Tue</option>
+                    <option value="3">Wed</option>
+                    <option value="4">Thu</option>
+                    <option value="5">Fri</option>
+                    <option value="6">Sat</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Conflict Check Mode</label>
+                  <select id="setConflictMode">
+                    <option value="strict">Strict (Faculty & Room)</option>
+                    <option value="faculty">Faculty only</option>
+                    <option value="room">Room only</option>
+                    <option value="off">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnSaveSettings">Save Settings</button>
+                <button class="btn" id="btnResetSettings">Reset Defaults</button>
+                <div class="spacer"></div>
+                <span class="tag warn">Corporate only</span>
+              </div>
+
+              <div class="divider"></div>
+              <div class="card" style="margin:0; background:rgba(0,0,0,.18);">
+                <h2>Preview: Day Timetable</h2>
+                <div id="timingPreview" class="muted">—</div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Masters (Programs / Sections / Rooms)</h2>
+              <p class="hint" style="margin:0;">Comma-separated values. Example sections: A,B,C,D</p>
+              <div class="divider"></div>
+              <div class="form">
+                <div style="grid-column:1/-1;">
+                  <label>Programs (comma separated)</label>
+                  <input id="setPrograms" placeholder="PGDM, PGDM-BA, MBA-Global"/>
+                </div>
+                <div style="grid-column:1/-1;">
+                  <label>Sections (comma separated)</label>
+                  <input id="setSections" placeholder="A,B,C,D"/>
+                </div>
+                <div style="grid-column:1/-1;">
+                  <label>Rooms (comma separated)</label>
+                  <input id="setRooms" placeholder="Room-101, Room-102, Lab-1, Auditorium"/>
+                </div>
+<div class="divider"></div>
+<div class="card" id="addRoomMapCard" style="margin:0; background:rgba(0,0,0,.18); min-height:320px;">
+  <h2 style="margin-top:0;">Add Program → Section → Room Mapping</h2>
+  <p class="hint" style="margin:0;">Add mappings one-by-one here. If an entry already exists, edit or delete it from the “Default Classroom Mapping” section below.</p>
+  <div class="divider"></div>
+  <div class="form">
+    <div>
+      <label>Program</label>
+      <select id="mapProgram" class="miniSelect"></select>
+    </div>
+    <div>
+      <label>Section</label>
+      <select id="mapSection" class="miniSelect"></select>
+    </div>
+    <div>
+      <label>Room</label>
+      <select id="mapRoom" class="miniSelect"></select>
+    </div>
+  </div>
+  <div class="row" style="margin-top:10px;">
+    <button class="btn ok" id="btnAddRoomMapEntry">Add Mapping</button>
+  </div>
+</div>
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnSaveMasters">Save Masters</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Default Classroom Mapping (Program → Section → Room)</h2>
+              <p class="hint" style="margin:0;">
+                This is the default room shown in Schedule Builder grid. You can still change room per row for a specific day.
+              </p>
+              <div class="divider"></div>
+              <div style="overflow:auto;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="min-width:180px;">Program</th>
+                      <th>Section</th>
+                      <th>Default Room</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="roomMapBody"></tbody>
+                </table>
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <button class="btn primary" id="btnSaveRoomMap">Save Classroom Mapping</button>
+                <div class="spacer"></div>
+                <span class="hint">If a room is removed from Masters, it will be auto-corrected.</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Logo</h2>
+              <div class="row">
+                <input type="file" id="logoFile" accept="image/*"/>
+                <button class="btn primary" id="btnSaveLogo">Save Logo</button>
+                <button class="btn danger" id="btnRemoveLogo">Remove Logo</button>
+              </div>
+              <p class="hint">Logo appears in the header. Stored locally in this browser.</p>
+            </div>
+          </section>
+
+          <!-- DEVELOPMENT -->
+          <section id="tab-dev" style="display:none;">
+            <div class="sectionTitle">
+              <div>
+                <h2>Development / Admin Tools</h2>
+                <p>Utilities for maintenance (Corporate / Registrar)</p>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h2>Data Tools</h2>
+              <div class="row">
+                <button class="btn danger" id="btnWipeAllData">Wipe All Data (This Browser)</button>
+                <button class="btn" id="btnExportAllJson">Export All Data (JSON)</button>
+                <input type="file" id="importJsonFile" accept="application/json"/>
+                <button class="btn primary" id="btnImportJson">Import JSON</button>
+                <div class="spacer"></div>
+                <span class="tag warn">Careful</span>
+              </div>
+              <p class="hint">
+                Use Export/Import to move data between machines (offline). For central scheduling, move to Apps Script + Sheets.
+              </p>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast">
+    <strong id="toastTitle">Done</strong>
+    <span id="toastMsg">Saved</span>
+  </div>
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const SUPABASE_URL = "https://adwnqucfurxvelbvxokx.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkd25xdWNmdXJ4dmVsYnZ4b2t4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2OTM0MjcsImV4cCI6MjA4NjI2OTQyN30.ttIpah1NZtIbckH3obc4J51EPUsjKuem3omP0e3DUeg";
+
+  // Make the client globally available to non-module scripts
+  window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
+<script>
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
+const KEYS = {
+  USERS: "gbs_sched_users_v2",
+  SESSION: "gbs_sched_session_v2",
+  LOGO: "gbs_sched_logo_v2",
+  SETTINGS: "gbs_sched_settings_v2",
+  MASTERS: "gbs_sched_masters_v2",
+  MAPPING: "gbs_sched_mapping_v2",
+  SESSIONS: "gbs_sched_sessions_v2",
+  SCHEDULES: "gbs_sched_schedules_v2"
+};
+
+/* =========================================================
+   DEFAULTS
+========================================================= */
+const DEFAULT_SETTINGS = {
+  // Pre-defined timings model:
+  firstStart: "10:30",
+  periodMins: 60,
+  gapMins: 10,
+  periodsCount: 5,      // class periods (not counting lunch)
+  lunchAfter: 2,        // lunch after period #2 (0 => no lunch)
+  lunchMins: 60,
+  workingDays: ["1","2","3","4","5"], // Mon-Fri
+  conflictMode: "strict" // strict/faculty/room/off
+};
+
+const DEFAULT_MASTERS = {
+  programs: ["PGDM","PGDM-BA","MBA-Global"],
+  sections: ["A","B","C","D"],
+  rooms: ["Room-101","Room-102","Room-103","Lab-1","Auditorium"],
+  // program -> section -> room
+  classroomMap: {}
+};
+
+/* =========================================================
+   SPECIAL SESSION TYPES (Non-mapping sessions)
+========================================================= */
+const SPECIAL_SESSION_TYPES = [
+  "Non-Academic Session",
+  "Industry Connect",
+  "Corporate Connect",
+  "Alumni Session"
+];
+
+function isSpecialValue(v){ return (v||"").startsWith("SP::"); }
+function specialTypeFromValue(v){ return (v||"").replace(/^SP::/,""); }
+
+/* Pop-box for special sessions: Topic + Guest Name are mandatory */
+function promptTopicGuest(type, existingSession){
+  const prevTopic = (existingSession?.topic || "").trim();
+  const prevGuest = (existingSession?.guestName || existingSession?.facultyName || "").trim();
+
+  let topic = prompt(`${type}\n\nEnter Topic (mandatory):`, prevTopic);
+  if(topic===null) return null;
+  topic = (topic||"").trim();
+  if(!topic){ alert("Topic is mandatory."); return null; }
+
+  let guest = prompt(`${type}\n\nEnter Guest Name (mandatory):`, prevGuest);
+  if(guest===null) return null;
+  guest = (guest||"").trim();
+  if(!guest){ alert("Guest Name is mandatory."); return null; }
+
+  return { topic, guestName: guest };
+}
+
+/* =========================================================
+   STATE
+========================================================= */
+let state = {
+  user: null,
+  users: [],
+  settings: {...DEFAULT_SETTINGS},
+  masters: {...DEFAULT_MASTERS},
+  mapping: [],        // {id, program, semester, section, courseCode, courseName, facultyEmail, facultyName, plannedSessions}
+  sessions: [],       // {id,date,startTime,endTime,program,semester,section,courseCode,facultyEmail,room,remarks,createdAt}
+  schedules: []       // {id,date,semester,status,createdAt,createdBy,sessions:[...],meta:{}}
+};
+
+let dashScope = { program:"", semester:"", section:"", facultyEmail:"" };
+let completionFilter = { type:null, value:null };
+
+/* =========================================================
+   UTIL
+========================================================= */
+function $(id){ return document.getElementById(id); }
+// ---------------------------------------------------------------------
+// STORAGE (Local + Supabase Cloud Sync + Realtime)
+// ---------------------------------------------------------------------
+// NOTE: We intentionally do NOT sync KEYS.SESSION (login session) to cloud.
+// That should remain per-user/per-browser.
+const CLOUD_EXCLUDE_KEYS = new Set([KEYS.SESSION]);
+
+async function supaUpsert(k, v){
+  try{
+    const sb = window.supabase;
+    if(!sb) return;
+    const { error } = await sb
+      .from("app_state")
+      .upsert({ key: k, value: v, updated_at: new Date().toISOString() });
+    if(error) console.error("Supabase upsert error:", error);
+  }catch(err){
+    console.error("Supabase upsert exception:", err);
+  }
+}
+
+async function supaGet(k){
+  try{
+    const sb = window.supabase;
+    if(!sb) return null;
+    const { data, error } = await sb
+      .from("app_state")
+      .select("value")
+      .eq("key", k)
+      .maybeSingle();
+    if(error){ console.error("Supabase get error:", error); return null; }
+    return data?.value ?? null;
+  }catch(err){
+    console.error("Supabase get exception:", err);
+    return null;
+  }
+}
+
+
+async function updateOnlineBadge(){
+  const tag = document.getElementById("modeTag");
+  const hint = document.getElementById("modeHint");
+  if(!tag || !hint) return;
+
+  const sb = window.supabase;
+  let user = null;
+  try{
+    user = (await sb?.auth?.getUser())?.data?.user || null;
+  }catch(_){ user = null; }
+
+  if(user){
+    tag.classList.remove("warn");
+    tag.classList.add("ok");
+    tag.textContent = "Online Mode";
+    hint.textContent = "Data is stored online (Supabase). Multi-user changes will sync in real time.";
+  }else{
+    tag.classList.remove("ok");
+    tag.classList.add("warn");
+    tag.textContent = "Offline Mode";
+    hint.textContent = "Data is stored in this browser. To sync across users, sign in (top-right) and save again.";
+  }
+}
+
+async function ensureSupabaseAuth(email, pass){
+  const sb = window.supabase;
+  if(!sb?.auth) return { ok:false, message:"Supabase client not loaded" };
+
+  // If already signed in, reuse the session
+  try{
+    const existing = (await sb.auth.getUser())?.data?.user;
+    if(existing) return { ok:true, user: existing };
+  }catch(_){}
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if(error) return { ok:false, message: error.message, error };
+  return { ok:true, user: data.user };
+}
+
+// Keep the existing save/load signatures so the app code doesn't change
+function save(key, val){
+  localStorage.setItem(key, JSON.stringify(val));
+  if(CLOUD_EXCLUDE_KEYS.has(key)) return; // do not sync session
+  // fire-and-forget cloud sync (no UI blocking)
+  supaUpsert(key, val);
+}
+
+function load(key, fallback){
+  const raw = localStorage.getItem(key);
+  if(!raw) return fallback;
+  try { return JSON.parse(raw); } catch { return fallback; }
+}
+
+// Pull cloud -> local on first load
+async function syncDownAll(){
+  const keys = Object.values(KEYS).filter(k => !CLOUD_EXCLUDE_KEYS.has(k));
+  for(const k of keys){
+    const v = await supaGet(k);
+    if(v !== null){
+      localStorage.setItem(k, JSON.stringify(v));
+    }
+  }
+}
+
+// Apply a remote update into in-memory state + re-render relevant UI.
+// This avoids calling init() again (init adds event listeners).
+function applyRemoteUpdate(changedKey){
+  // update state slice
+  if(changedKey === KEYS.USERS)      { state.users     = load(KEYS.USERS, []); renderUsers(); }
+  if(changedKey === KEYS.SETTINGS)   { state.settings  = load(KEYS.SETTINGS, {...DEFAULT_SETTINGS}); renderTimingPreview(); }
+  if(changedKey === KEYS.MASTERS)    { state.masters   = load(KEYS.MASTERS, {...DEFAULT_MASTERS}); if(!state.masters.classroomMap) state.masters.classroomMap = {}; renderRoomMapTable(); renderTimingPreview(); }
+  if(changedKey === KEYS.MAPPING)    { state.mapping   = load(KEYS.MAPPING, []); renderMappingTable(); }
+  if(changedKey === KEYS.SESSIONS)   { state.sessions  = load(KEYS.SESSIONS, []); renderSessionsTable(); }
+  if(changedKey === KEYS.SCHEDULES)  { state.schedules = load(KEYS.SCHEDULES, []); renderDashboard(); renderRoster(); renderBuilderGrid(); renderPublishTab(); }
+
+  // logo is stored directly in localStorage; applyLogo reads from localStorage
+  if(changedKey === KEYS.LOGO)       { applyLogo(); }
+
+  // refresh dropdowns that depend on masters/mapping/sessions/etc.
+  refreshAllDropdowns();
+
+  // charts depend on data and window size
+  if(state.user) renderDashboardCharts();
+}
+
+// Subscribe to realtime db changes
+function startRealtime(){
+  const sb = window.supabase;
+  if(!sb) return;
+
+  sb.channel("app_state_changes")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "app_state" },
+      (payload) => {
+        const row = payload.new;
+        if(!row?.key) return;
+        // ignore session changes (we don't store them anyway)
+        if(CLOUD_EXCLUDE_KEYS.has(row.key)) return;
+
+        // update local cache
+        localStorage.setItem(row.key, JSON.stringify(row.value));
+
+        // update in-memory state + re-render
+        applyRemoteUpdate(row.key);
+      }
+    )
+    .subscribe((status) => {
+      // you can uncomment to debug:
+      // console.log("Realtime status:", status);
+    });
+}
+
+function nowISO(){ return new Date().toISOString(); }
+function toast(title, msg){
+  $("toastTitle").textContent = title;
+  $("toastMsg").textContent = msg;
+  const t = $("toast");
+  t.style.display = "block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.style.display="none", 2600);
+}
+function escapeHtml(s){
+  return (s ?? "").toString()
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function toDateStr(d){
+  const x = new Date(d);
+  const yyyy = x.getFullYear();
+  const mm = String(x.getMonth()+1).padStart(2,"0");
+  const dd = String(x.getDate()).padStart(2,"0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+function timeToMins(t){
+  const [hh,mm] = (t||"00:00").split(":").map(Number);
+  return hh*60 + mm;
+}
+function minsToTime(m){
+  m = Math.max(0, m);
+  const hh = String(Math.floor(m/60)).padStart(2,"0");
+  const mm = String(m%60).padStart(2,"0");
+  return `${hh}:${mm}`;
+}
+function overlaps(aStart,aEnd,bStart,bEnd){ return aStart < bEnd && bStart < aEnd; }
+function unique(arr){ return [...new Set(arr.filter(Boolean))]; }
+function normSem(v){
+  const s = String(v ?? "").trim().toLowerCase();
+  if(!s) return "";
+  // Numeric forms: "3", "Sem 3", "Semester-03"
+  const num = s.match(/\d+/);
+  if(num) return String(Number(num[0]));
+  // Roman numerals: "iii", "Sem III"
+  const roman = s.replace(/semester|sem|[^ivx]/g,"").toUpperCase();
+  const map = { "I":"1","II":"2","III":"3","IV":"4","V":"5" };
+  if(map[roman]) return map[roman];
+  // Word forms: "three"
+  const words = { "one":"1","two":"2","three":"3","four":"4","five":"5" };
+  for(const k in words){ if(s.includes(k)) return words[k]; }
+  return s;
+}
+function genId(prefix){
+  return prefix + Math.random().toString(36).slice(2,10).toUpperCase();
+}
+
+/* Simple SHA-256 */
+async function sha256(str){
+  const buf = new TextEncoder().encode(str);
+  const digest = await crypto.subtle.digest("SHA-256", buf);
+  return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+/* CSV parser */
+function parseCSV(text){
+  const rows = [];
+  let i=0, field="", row=[], inQuotes=false;
+  while(i < text.length){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i+=2; continue; }
+        inQuotes = false; i++; continue;
+      } else { field += c; i++; continue; }
+    } else {
+      if(c === '"'){ inQuotes = true; i++; continue; }
+      if(c === ','){ row.push(field); field=""; i++; continue; }
+      if(c === '\n' || c === '\r'){
+        if(c === '\r' && text[i+1] === '\n') i++;
+        row.push(field); field="";
+        if(row.some(x => (x||"").trim() !== "")) rows.push(row);
+        row=[]; i++; continue;
+      }
+      field += c; i++; continue;
+    }
+  }
+  row.push(field);
+  if(row.some(x => (x||"").trim() !== "")) rows.push(row);
+  return rows;
+}
+
+/* =========================================================
+   TIMINGS: BUILD SLOTS (pre-defined)
+========================================================= */
+function buildDaySlots(){
+  const s = state.settings;
+  const first = timeToMins(s.firstStart);
+  const dur = Number(s.periodMins||60);
+  const gap = Number(s.gapMins||10);
+  const count = Number(s.periodsCount||5);
+  const lunchAfter = Number(s.lunchAfter||0);
+  const lunchMins = Number(s.lunchMins||60);
+
+  const slots = [];
+  let t = first;
+
+  for(let i=1; i<=count; i++){
+    const start = t;
+    const end = t + dur;
+    slots.push({
+      type:"class",
+      idx:i,
+      label:`P${i}`,
+      start: minsToTime(start),
+      end: minsToTime(end),
+      startM:start,
+      endM:end
+    });
+
+    // lunch insertion (no gap)
+    if(lunchAfter > 0 && i === lunchAfter){
+      const lS = end;
+      const lE = end + lunchMins;
+      slots.push({
+        type:"lunch",
+        idx:0,
+        label:"Lunch",
+        start: minsToTime(lS),
+        end: minsToTime(lE),
+        startM:lS,
+        endM:lE
+      });
+      t = lE; // no gap after lunch
+    } else {
+      t = end + gap; // gap between classes only
+    }
+  }
+
+  return slots;
+}
+
+function renderTimingPreview(){
+  const slots = buildDaySlots();
+  const html = slots.map(s=>{
+    const cls = s.type==="lunch" ? "tag warn" : "tag ok";
+    return `<div style="margin:6px 0;">
+      <span class="${cls}">${escapeHtml(s.label)}</span>
+      <span class="muted" style="margin-left:8px;">${escapeHtml(s.start)} – ${escapeHtml(s.end)}</span>
+    </div>`;
+  }).join("");
+  $("timingPreview").innerHTML = html || "<span class='muted'>No slots</span>";
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+async function init(){
+  state.users = load(KEYS.USERS, []);
+  state.user = load(KEYS.SESSION, null);
+  state.settings = load(KEYS.SETTINGS, {...DEFAULT_SETTINGS});
+  state.masters = load(KEYS.MASTERS, {...DEFAULT_MASTERS});
+  state.mapping = load(KEYS.MAPPING, []);
+  state.sessions = load(KEYS.SESSIONS, []);
+  state.schedules = load(KEYS.SCHEDULES, []);
+
+  // ensure classroomMap exists
+  if(!state.masters.classroomMap) state.masters.classroomMap = {};
+
+  // ensure default corporate
+  if(!state.users.some(u=>u.email==="corporate@local")){
+    state.users.push({
+      email:"corporate@local",
+      role:"corporate",
+      passHash: await sha256("1234"),
+      createdAt: nowISO()
+    });
+    save(KEYS.USERS, state.users);
+  }
+
+  // ensure mapping rows have ids (backward compatibility)
+  let changed = false;
+  state.mapping = state.mapping.map(r=>{
+    if(!r.id){ changed=true; return {...r, id: genId("M")}; }
+    return r;
+  });
+  if(changed) save(KEYS.MAPPING, state.mapping);
+
+
+  // ensure schedule drafts have ids/status (backward compatibility)
+  let schChanged = false;
+  state.schedules = (state.schedules || []).map(s=>{
+    if(!s) return s;
+    const out = {...s};
+    if(!out.id){ out.id = genId("S"); schChanged = true; }
+    if(!out.status){ out.status = "draft"; schChanged = true; }
+    if(!Array.isArray(out.sessions)) { out.sessions = []; schChanged = true; }
+    return out;
+  }).filter(Boolean);
+  if(schChanged) save(KEYS.SCHEDULES, state.schedules);
+
+
+  // sanitize classroomMap with current masters
+  normalizeClassroomMap();
+
+  applyLogo();
+  wireUI();
+  setWhoAmI();
+  applyShellVisibility();
+  applyRoleAccess();
+
+  hydrateSettingsUI();
+  hydrateMastersUI();
+  renderTimingPreview();
+  renderRoomMapTable();
+
+  refreshAllDropdowns();
+
+  renderMappingTable();
+  renderSessionsTable();
+  renderDashboard();
+  setRosterDefaultDates();
+
+  // builder defaults
+  $("sbDate").value = toDateStr(new Date());
+  $("sbSemester").value = "1";
+
+  window.addEventListener("resize", ()=>{ if(state.user) renderDashboardCharts(); });
+}
+
+/* =========================================================
+   UI WIRING
+========================================================= */
+function wireUI(){
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.addEventListener("click", ()=> setTab(btn.dataset.tab));
+  });
+
+  $("btnDoLogin").onclick = doLogin;
+  $("btnLogout").onclick = logout;
+
+  $("btnRefreshDash").onclick = ()=>{ renderDashboard(); toast("Refreshed","Dashboard updated"); };
+  $("btnApplyDashFilters").onclick = applyDashFilters;
+  $("btnClearDashFilters").onclick = ()=>{ dashScope={program:"",semester:"",section:"",facultyEmail:""}; hydrateDashFilters(); renderDashboard(); };
+
+  $("btnRosterToday").onclick = ()=>{ const d=toDateStr(new Date()); $("rFrom").value=d; $("rTo").value=d; renderRoster(); };
+  $("btnRosterWeek").onclick = ()=>{
+    const d=new Date(); const day=d.getDay();
+    const diffToMon = (day===0)? -6 : (1-day);
+    const mon=new Date(d); mon.setDate(d.getDate()+diffToMon);
+    const fri=new Date(mon); fri.setDate(mon.getDate()+4);
+    $("rFrom").value=toDateStr(mon); $("rTo").value=toDateStr(fri);
+    renderRoster();
+  };
+  $("btnRenderRoster").onclick = renderRoster;
+  $("btnClearRoster").onclick = setRosterDefaultDates;
+  $("btnExportRosterCsv").onclick = exportRosterCsv;
+
+  // builder (new)
+  $("btnRenderBuilderGrid").onclick = renderBuilderGrid;
+  $("btnClearBuilderGrid").onclick = clearBuilderForDateSem;
+  $("btnExportAllSessionsCsv").onclick = exportAllSessionsCsv;
+  $("btnSaveScheduleDraft").onclick = saveScheduleDraft;
+  $("btnGoToPublish").onclick = ()=> setTab("publish");
+
+  $("btnDownloadMappingTemplate").onclick = downloadMappingTemplate;
+  $("btnUploadMapping").onclick = uploadMappingCsv;
+  $("btnClearMapping").onclick = clearMapping;
+
+  $("btnDownloadScheduleTemplate").onclick = downloadScheduleTemplate;
+  $("btnUploadScheduleCsv").onclick = uploadScheduleCsv;
+
+  $("btnCreateUser").onclick = createUser;
+  $("btnClearUser").onclick = ()=>{ ["uEmail","uPass","uPass2"].forEach(id=>$(id).value=""); $("uRole").value="faculty"; };
+
+  $("btnSaveSettings").onclick = saveSettings;
+  $("btnResetSettings").onclick = resetSettings;
+  $("btnSaveMasters").onclick = saveMasters;
+  $("btnSaveRoomMap").onclick = saveRoomMap;
+  if(document.getElementById("btnAddRoomMapEntry")) $("btnAddRoomMapEntry").onclick = addRoomMapEntry;
+
+  $("btnSaveLogo").onclick = saveLogo;
+  $("btnRemoveLogo").onclick = removeLogo;
+
+  $("btnWipeAllData").onclick = wipeAllData;
+  $("btnExportAllJson").onclick = exportAllJson;
+  $("btnImportJson").onclick = importAllJson;
+
+  $("btnExportCompletionCsv").onclick = exportCompletionCsv;
+
+  // view & publish
+  $("btnVPLoad").onclick = renderPublishTab;
+  if($("btnVPPreviewWeek")) $("btnVPPreviewWeek").onclick = vpPreviewWeek;
+  $("btnVPClear").onclick = ()=>{ $("vpFrom").value=""; $("vpTo").value=""; $("vpSemester").value=""; $("vpSearch").value=""; window.__vpSelectedId=null; window.__vpWeek=null; $("vpPreviewCard").style.display="none"; renderPublishTab(); };
+  $("vpSearch").addEventListener("input", ()=>{ clearTimeout(window.__vpTimer); window.__vpTimer=setTimeout(renderPublishTab, 250); });
+
+  // filter preview instantly by program scope
+  if($("vpPdfProgram")) $("vpPdfProgram").addEventListener("change", vpApplyProgramScopeToPreview);
+
+  // mapping edit handlers
+  $("btnSaveMappingEdit").onclick = saveMappingEdit;
+  $("btnCancelMappingEdit").onclick = cancelMappingEdit;
+
+  // live preview in settings
+  ["setFirstStart","setPeriodMins","setGapMins","setPeriodsCount","setLunchAfter","setLunchMins"].forEach(id=>{
+    $(id).addEventListener("input", ()=>{
+      // temporary preview (does not save)
+      const tmp = {
+        ...state.settings,
+        firstStart: $("setFirstStart").value || state.settings.firstStart,
+        periodMins: Number($("setPeriodMins").value || state.settings.periodMins),
+        gapMins: Number($("setGapMins").value || state.settings.gapMins),
+        periodsCount: Number($("setPeriodsCount").value || state.settings.periodsCount),
+        lunchAfter: Number($("setLunchAfter").value || state.settings.lunchAfter),
+        lunchMins: Number($("setLunchMins").value || state.settings.lunchMins),
+      };
+      const old = state.settings;
+      state.settings = tmp;
+      renderTimingPreview();
+      state.settings = old;
+    });
+  });
+}
+
+/* =========================================================
+   LOGIN / ROLES
+========================================================= */
+function isCorporate(){ return state.user?.role==="corporate"; }
+function isFaculty(){ return state.user?.role==="faculty"; }
+function isRegistrar(){ return state.user?.role==="registrar"; }
+
+function isDateSemPublished(date, semester){
+  return (state.schedules||[]).some(s=> s && s.date===date && String(s.semester)===String(semester) && s.status==="published");
+}
+function restricted(msg){
+  try{ alert(msg); }catch(e){}
+  toast("Restricted", msg);
+}
+
+function applyShellVisibility(){
+  const loggedIn = !!state.user;
+  $("loginScreen").style.display = loggedIn ? "none" : "block";
+  $("appShell").style.display = loggedIn ? "block" : "none";
+  $("btnLogout").style.display = loggedIn ? "inline-block" : "none";
+}
+function setWhoAmI(){
+  if(!state.user){ $("whoami").textContent = "Not logged in"; return; }
+  const roleLabel = state.user.role==="corporate" ? "Corporate" : (state.user.role==="registrar" ? "Registrar's Office" : "Faculty");
+  $("whoami").textContent = `${state.user.email} • ${roleLabel}`;
+}
+async function doLogin(){
+  const email = ($("loginEmail").value || "").trim().toLowerCase();
+  const pass = $("loginPass").value || "";
+  if(!email || !pass){ toast("Missing info","Enter email and password"); return; }
+
+  // IMPORTANT: Option B requires Supabase Auth login so writes become truly online.
+  const authRes = await ensureSupabaseAuth(email, pass);
+  if(!authRes.ok){ toast("Supabase login failed", authRes.message); await updateOnlineBadge(); return; }
+  await updateOnlineBadge();
+
+  const user = state.users.find(u=>u.email===email);
+  if(!user){ toast("Invalid login","User not found. Ask Corporate to create access."); return; }
+
+  const h = await sha256(pass);
+  if(h !== user.passHash){ toast("Invalid login","Incorrect password"); return; }
+
+  state.user = { email:user.email, role:user.role };
+  save(KEYS.SESSION, state.user);
+
+  setWhoAmI();
+  applyShellVisibility();
+  applyRoleAccess();
+
+  if(isFaculty()){
+    dashScope = { program:"", semester:"", section:"", facultyEmail: state.user.email };
+  } else {
+    dashScope = { program:"", semester:"", section:"", facultyEmail:"" };
+  }
+  hydrateDashFilters();
+  refreshAllDropdowns();
+  renderDashboard();
+  setTab("dashboard");
+  toast("Welcome", `Logged in as ${user.role==="corporate" ? "Corporate" : "Faculty"}`);
+}
+async function logout(){
+  state.user = null;
+  localStorage.removeItem(KEYS.SESSION);
+
+  try{ await window.supabase?.auth?.signOut(); }catch(_){}
+
+  setWhoAmI();
+  applyShellVisibility();
+  await updateOnlineBadge();
+  toast("Logged out","Session ended");
+}
+function applyRoleAccess(){
+  if(!state.user) return;
+
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    const tab = btn.dataset.tab;
+
+    if(state.user.role==="faculty"){
+      btn.style.display = (tab==="dashboard" || tab==="roster") ? "block" : "none";
+      return;
+    }
+
+    if(state.user.role==="registrar"){
+      // Registrar's Office: all tabs except Users and Settings
+      btn.style.display = (tab==="users" || tab==="settings") ? "none" : "block";
+      return;
+    }
+
+    // Corporate: all tabs
+    btn.style.display = "block";
+  });
+
+  const active = document.querySelector(".nav button.active")?.dataset.tab || "dashboard";
+  if(state.user.role==="faculty" && !(active==="dashboard" || active==="roster")) setTab("dashboard");
+  if(state.user.role==="registrar" && (active==="users" || active==="settings")) setTab("dashboard");
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+function setTab(tab){
+  if(!state.user) return;
+  const allowed = (state.user.role==="faculty")
+    ? ["dashboard","roster"]
+    : (state.user.role==="registrar")
+      ? ["dashboard","roster","builder","publish","mapping","bulk","dev"]
+      : ["dashboard","roster","builder","publish","mapping","bulk","users","settings","dev"];
+
+  if(!allowed.includes(tab)){
+    toast("Access denied","You do not have access to this tab.");
+    tab="dashboard";
+  }
+
+  document.querySelectorAll(".nav button").forEach(b=> b.classList.toggle("active", b.dataset.tab===tab));
+  ["dashboard","roster","builder","publish","mapping","bulk","users","settings","dev"].forEach(t=>{
+    const el = $("tab-"+t);
+    if(el) el.style.display = (t===tab) ? "block" : "none";
+  });
+
+  if(tab==="dashboard") renderDashboard();
+  if(tab==="roster") renderRoster();
+  if(tab==="builder") { renderSessionsTable(); $("sbGridWrap").innerHTML = `<div class="muted">Click “Load Grid” to render.</div>`; refreshBuilderCountTag(); }
+  if(tab==="publish") { renderPublishTab(); }
+  if(tab==="mapping") renderMappingTable();
+  if(tab==="users") renderUsers();
+  if(tab==="settings"){ renderTimingPreview(); renderRoomMapTable(); }
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+function applyLogo(){
+  const logoData = localStorage.getItem(KEYS.LOGO);
+  const box = $("logoBox");
+  box.innerHTML = "";
+  if(logoData){
+    const img = document.createElement("img");
+    img.src = logoData;
+    img.alt = "Logo";
+    box.appendChild(img);
+  } else {
+    const span = document.createElement("span");
+    span.textContent = "GBS";
+    span.style.color = "var(--muted)";
+    span.style.fontWeight = "900";
+    span.style.fontSize = "12px";
+    box.appendChild(span);
+  }
+}
+function saveLogo(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can update logo."); return; }
+  const f = $("logoFile").files?.[0];
+  if(!f){ toast("No file selected","Choose a logo image first."); return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    localStorage.setItem(KEYS.LOGO, reader.result);
+    applyLogo();
+    toast("Saved","Logo updated");
+    $("logoFile").value = "";
+  };
+  reader.readAsDataURL(f);
+}
+function removeLogo(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can update logo."); return; }
+  localStorage.removeItem(KEYS.LOGO);
+  applyLogo();
+  toast("Removed","Logo cleared");
+}
+
+/* =========================================================
+   SETTINGS + MASTERS + ROOM MAP
+========================================================= */
+function hydrateSettingsUI(){
+  $("setFirstStart").value = state.settings.firstStart;
+  $("setPeriodMins").value = state.settings.periodMins;
+  $("setGapMins").value = state.settings.gapMins;
+  $("setPeriodsCount").value = state.settings.periodsCount;
+  $("setLunchAfter").value = state.settings.lunchAfter;
+  $("setLunchMins").value = state.settings.lunchMins;
+  $("setConflictMode").value = state.settings.conflictMode;
+
+  const sel = $("setWorkingDays");
+  [...sel.options].forEach(opt=>{
+    opt.selected = state.settings.workingDays.includes(opt.value);
+  });
+}
+function hydrateMastersUI(){
+  $("setPrograms").value = (state.masters.programs || []).join(", ");
+  $("setSections").value = (state.masters.sections || []).join(", ");
+  $("setRooms").value = (state.masters.rooms || []).join(", ");
+}
+
+function saveSettings(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can change settings."); return; }
+  const wd = [...$("setWorkingDays").selectedOptions].map(o=>o.value);
+
+  const firstStart = $("setFirstStart").value || DEFAULT_SETTINGS.firstStart;
+  const periodMins = Number($("setPeriodMins").value || DEFAULT_SETTINGS.periodMins);
+  const gapMins = Number($("setGapMins").value || DEFAULT_SETTINGS.gapMins);
+  const periodsCount = Number($("setPeriodsCount").value || DEFAULT_SETTINGS.periodsCount);
+  const lunchAfter = Number($("setLunchAfter").value || DEFAULT_SETTINGS.lunchAfter);
+  const lunchMins = Number($("setLunchMins").value || DEFAULT_SETTINGS.lunchMins);
+
+  if(periodMins <= 0 || periodsCount <= 0){
+    toast("Invalid", "Period duration and total periods must be > 0");
+    return;
+  }
+  if(lunchAfter < 0 || lunchAfter > periodsCount){
+    toast("Invalid", "Lunch After must be between 0 and total periods");
+    return;
+  }
+
+  state.settings = {
+    firstStart,
+    periodMins,
+    gapMins: Math.max(0, gapMins),
+    periodsCount,
+    lunchAfter,
+    lunchMins,
+    workingDays: wd.length ? wd : [...DEFAULT_SETTINGS.workingDays],
+    conflictMode: $("setConflictMode").value || DEFAULT_SETTINGS.conflictMode
+  };
+  save(KEYS.SETTINGS, state.settings);
+  renderTimingPreview();
+  toast("Saved","Settings updated");
+  renderRoster();
+}
+
+function resetSettings(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can change settings."); return; }
+  state.settings = {...DEFAULT_SETTINGS};
+  save(KEYS.SETTINGS, state.settings);
+  hydrateSettingsUI();
+  renderTimingPreview();
+  toast("Reset","Defaults restored");
+}
+
+function saveMasters(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can change masters."); return; }
+
+  const programs = ($("setPrograms").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+  const sections = ($("setSections").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+  const rooms = ($("setRooms").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+
+  state.masters = {
+    ...state.masters,
+    programs: programs.length ? programs : [...DEFAULT_MASTERS.programs],
+    sections: sections.length ? sections : [...DEFAULT_MASTERS.sections],
+    rooms: rooms.length ? rooms : [...DEFAULT_MASTERS.rooms],
+    classroomMap: state.masters.classroomMap || {}
+  };
+
+  normalizeClassroomMap();
+  save(KEYS.MASTERS, state.masters);
+
+  refreshAllDropdowns();
+  renderRoomMapTable();
+  toast("Saved","Masters updated");
+}
+
+function normalizeClassroomMap(){
+  // Keep mapping as a sparse structure: Program → Section → Room (only for entries explicitly added).
+  // If room becomes invalid due to Masters update, auto-correct it to the first available room.
+  const rooms = state.masters.rooms || [];
+  const programs = state.masters.programs || [];
+  const sections = state.masters.sections || [];
+
+  let map = state.masters.classroomMap || {};
+  let changed = false;
+
+  // Remove programs not in masters
+  for(const p of Object.keys(map)){
+    if(!programs.includes(p)){
+      delete map[p];
+      changed = true;
+    }
+  }
+
+  // For each program in map: remove sections not in masters and auto-correct invalid rooms
+  for(const p of Object.keys(map)){
+    const secObj = map[p] || {};
+    for(const s of Object.keys(secObj)){
+      if(!sections.includes(s)){
+        delete secObj[s];
+        changed = true;
+        continue;
+      }
+      const val = secObj[s];
+      if(val && rooms.length && !rooms.includes(val)){
+        secObj[s] = rooms[0];
+        changed = true;
+      }
+    }
+    // remove empty program buckets
+    if(Object.keys(secObj).length === 0){
+      delete map[p];
+      changed = true;
+    } else {
+      map[p] = secObj;
+    }
+  }
+
+  state.masters.classroomMap = map;
+  if(changed) save(KEYS.MASTERS, state.masters);
+}
+
+function renderRoomMapTable(){
+  const rooms = state.masters.rooms || [];
+  const map = state.masters.classroomMap || {};
+  const programs = Object.keys(map).sort((a,b)=>a.localeCompare(b));
+
+  let rows = [];
+  for(const p of programs){
+    const secObj = map[p] || {};
+    const sections = Object.keys(secObj).sort((a,b)=>a.localeCompare(b));
+    for(const s of sections){
+      const cur = secObj[s] || "";
+      const selectId = `rm__${encodeURIComponent(p)}__${encodeURIComponent(s)}`;
+      const editId = `rmEdit__${encodeURIComponent(p)}__${encodeURIComponent(s)}`;
+
+      rows.push(`
+        <tr>
+          <td>${escapeHtml(p)}</td>
+          <td><span class="tag">${escapeHtml(s)}</span></td>
+          <td>
+            <select class="miniSelect" id="${selectId}" disabled>
+              <option value="">— Select —</option>
+              ${rooms.map(r=>`<option value="${escapeHtml(r)}" ${r===cur?"selected":""}>${escapeHtml(r)}</option>`).join("")}
+            </select>
+          </td>
+          <td>
+            <button class="btn small" id="${editId}" onclick="roomMapToggleEdit('${escapeHtml(p)}','${escapeHtml(s)}')">Edit</button>
+            <button class="btn danger small" onclick="roomMapDeleteRow('${escapeHtml(p)}','${escapeHtml(s)}')">Delete</button>
+          </td>
+        </tr>
+      `);
+    }
+  }
+
+  $("roomMapBody").innerHTML = rows.join("") || `<tr><td colspan="4" class="muted">No mappings added yet. Add Program → Section → Room mappings from “Masters (Programs / Sections / Rooms)”.</td></tr>`;
+
+  // Also refresh add-mapping dropdowns
+  hydrateRoomMapAddForm();
+}
+
+function hydrateRoomMapAddForm(){
+  // Fill the add-mapping dropdowns inside Masters section
+  const programs = state.masters.programs || [];
+  const sections = state.masters.sections || [];
+  const rooms = state.masters.rooms || [];
+
+  // If UI isn't present (older versions / access), safely return
+  if(!document.getElementById("mapProgram")) return;
+
+  fillSelect("mapProgram", programs, "Select");
+  fillSelect("mapSection", sections, "Select");
+  fillSelect("mapRoom", rooms, "Select");
+
+  // Defaults
+  $("mapProgram").value = programs[0] || "";
+  $("mapSection").value = sections[0] || "";
+  $("mapRoom").value = rooms[0] || "";
+}
+
+function addRoomMapEntry(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can add mapping."); return; }
+
+  const program = ($("mapProgram")?.value || "").trim();
+  const section = ($("mapSection")?.value || "").trim();
+  const room = ($("mapRoom")?.value || "").trim();
+
+  if(!program || !section || !room){
+    toast("Missing fields","Please select Program, Section and Room.");
+    return;
+  }
+
+  if(!state.masters.classroomMap) state.masters.classroomMap = {};
+  if(!state.masters.classroomMap[program]) state.masters.classroomMap[program] = {};
+
+  const exists = Object.prototype.hasOwnProperty.call(state.masters.classroomMap[program], section);
+  if(exists){
+    toast("Entry already available",
+      "This Program → Section mapping already exists. Please edit it from “Default Classroom Mapping” or delete it there first, then add again.");
+    return;
+  }
+
+  state.masters.classroomMap[program][section] = room;
+  normalizeClassroomMap();
+  save(KEYS.MASTERS, state.masters);
+
+  renderRoomMapTable();
+  toast("Added","Mapping created");
+}
+
+function saveRoomMap(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can change mapping."); return; }
+
+  // Save only existing rows shown in the table (sparse mapping)
+  const sels = Array.from(document.querySelectorAll("select[id^='rm__']"));
+  let map = state.masters.classroomMap || {};
+  for(const sel of sels){
+    const parts = sel.id.split("__");
+    if(parts.length < 3) continue;
+    const program = decodeURIComponent(parts[1]||"");
+    const section = decodeURIComponent(parts[2]||"");
+    if(!program || !section) continue;
+    if(!map[program]) map[program] = {};
+    map[program][section] = sel.value || "";
+  }
+
+  // Clean and persist
+  state.masters.classroomMap = map;
+  normalizeClassroomMap();
+  save(KEYS.MASTERS, state.masters);
+
+  renderRoomMapTable();
+  toast("Saved","Classroom mapping updated");
+}
+
+/* Row-level edit/delete for Default Classroom Mapping */
+function roomMapToggleEdit(program, section){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can change mapping."); return; }
+  const sid = `rm__${encodeURIComponent(program)}__${encodeURIComponent(section)}`;
+  const bid = `rmEdit__${encodeURIComponent(program)}__${encodeURIComponent(section)}`;
+  const sel = document.getElementById(sid);
+  const btn = document.getElementById(bid);
+  if(!sel || !btn) return;
+
+  const isEditing = !sel.disabled;
+  if(isEditing){
+    // Save this one row
+    if(!state.masters.classroomMap) state.masters.classroomMap = {};
+    if(!state.masters.classroomMap[program]) state.masters.classroomMap[program] = {};
+    state.masters.classroomMap[program][section] = sel.value || "";
+    normalizeClassroomMap();
+    save(KEYS.MASTERS, state.masters);
+
+    sel.disabled = true;
+    btn.textContent = "Edit";
+    toast("Saved","Classroom mapping updated");
+  } else {
+    sel.disabled = false;
+    sel.focus();
+    btn.textContent = "Save";
+  }
+}
+
+function roomMapDeleteRow(program, section){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can change mapping."); return; }
+  const ok = confirm(`Delete classroom mapping for ${program} • Section ${section}?
+
+This will permanently remove this Program→Section mapping. You can add it again later from “Masters (Programs / Sections / Rooms)”.`);
+  if(!ok) return;
+
+  if(!state.masters.classroomMap) state.masters.classroomMap = {};
+  if(state.masters.classroomMap[program]){
+    delete state.masters.classroomMap[program][section];
+    if(Object.keys(state.masters.classroomMap[program]).length === 0){
+      delete state.masters.classroomMap[program];
+    }
+  }
+
+  normalizeClassroomMap();
+  save(KEYS.MASTERS, state.masters);
+
+  renderRoomMapTable();
+  toast("Deleted","Mapping removed");
+}
+
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+function fillSelect(selectId, options, includeAllLabel){
+  const el = $(selectId);
+  const cur = el.value;
+  el.innerHTML = "";
+  if(includeAllLabel){
+    const o = document.createElement("option");
+    o.value = "";
+    o.textContent = includeAllLabel;
+    el.appendChild(o);
+  }
+  for(const x of options){
+    const opt = document.createElement("option");
+    opt.value = x.value ?? x;
+    opt.textContent = x.label ?? x;
+    el.appendChild(opt);
+  }
+  if([...el.options].some(o=>o.value===cur)) el.value = cur;
+}
+
+function refreshAllDropdowns(){
+  const programs = state.masters.programs || [];
+  const sections = state.masters.sections || [];
+  const rooms = state.masters.rooms || [];
+
+  fillSelect("dProgram", programs, "All");
+  fillSelect("dSection", sections, "All");
+
+  fillSelect("rProgram", programs, "All");
+  fillSelect("rSection", sections, "All");
+  fillSelect("rRoom", rooms, "All");
+
+  // faculty list from mapping
+  const faculty = unique(state.mapping.map(r=>r.facultyEmail)).sort().map(e=>({value:e,label:e}));
+  fillSelect("dFaculty", faculty, "All");
+  fillSelect("rFaculty", faculty, isFaculty() ? "Myself" : "All");
+
+  hydrateRoomMapAddForm();
+
+  // View & Publish: PDF scope (Program-wise or All)
+  if(document.getElementById("vpPdfProgram")){
+    const prev = $("vpPdfProgram").value || "";
+    const opts = programs.map(p=>({value:p,label:p}));
+    fillSelect("vpPdfProgram", opts, "All Programs");
+    // keep previous selection when possible
+    $("vpPdfProgram").value = programs.includes(prev) ? prev : "";
+  }
+
+  hydrateDashFilters();
+}
+
+function hydrateDashFilters(){
+  $("dProgram").value = dashScope.program || "";
+  $("dSemester").value = dashScope.semester || "";
+  $("dSection").value = dashScope.section || "";
+  $("dFaculty").value = dashScope.facultyEmail || "";
+
+  if(isFaculty()){
+    $("dFaculty").value = state.user.email;
+    $("dFaculty").disabled = true;
+  } else {
+    $("dFaculty").disabled = false;
+  }
+}
+
+/* =========================================================
+   DASHBOARD: FILTER + COMPLETION
+========================================================= */
+function applyDashFilters(){
+  dashScope.program = $("dProgram").value || "";
+  dashScope.semester = $("dSemester").value || "";
+  dashScope.section = $("dSection").value || "";
+  dashScope.facultyEmail = isFaculty() ? state.user.email : ($("dFaculty").value || "");
+  renderDashboard();
+}
+function scopeLabel(){
+  const parts = [];
+  if(dashScope.program) parts.push(dashScope.program);
+  if(dashScope.semester) parts.push("Sem "+dashScope.semester);
+  if(dashScope.section) parts.push("Sec "+dashScope.section);
+  if(dashScope.facultyEmail) parts.push(dashScope.facultyEmail);
+  return parts.length ? parts.join(" • ") : "All";
+}
+function getScopedSessions(){
+  return state.sessions.filter(s=>{
+    if(dashScope.program && s.program!==dashScope.program) return false;
+    if(dashScope.semester && String(s.semester)!==String(dashScope.semester)) return false;
+    if(dashScope.section && s.section!==dashScope.section) return false;
+    if(dashScope.facultyEmail && s.facultyEmail!==dashScope.facultyEmail) return false;
+    return true;
+  });
+}
+function getScopedMapping(){
+  return state.mapping.filter(m=>{
+    if(dashScope.program && m.program!==dashScope.program) return false;
+    if(dashScope.semester && String(m.semester)!==String(dashScope.semester)) return false;
+    if(dashScope.section && m.section!==dashScope.section) return false;
+    if(dashScope.facultyEmail && m.facultyEmail!==dashScope.facultyEmail) return false;
+    return true;
+  });
+}
+function computeCompletionRows(){
+  const mapping = getScopedMapping();
+  const sessions = getScopedSessions();
+
+  const keyOf = (m)=> `${m.program}||${m.semester}||${m.section}||${m.courseCode}||${m.facultyEmail}`;
+  const map = new Map();
+
+  for(const m of mapping){
+    const k = keyOf(m);
+    if(!map.has(k)){
+      map.set(k, {
+        program:m.program, semester:m.semester, section:m.section,
+        courseCode:m.courseCode, courseName:m.courseName,
+        facultyEmail:m.facultyEmail, facultyName:m.facultyName,
+        planned: Number(m.plannedSessions||0),
+        delivered: 0
+      });
+    } else {
+      map.get(k).planned += Number(m.plannedSessions||0);
+    }
+  }
+
+  for(const s of sessions){
+    const k = `${s.program}||${s.semester}||${s.section}||${s.courseCode}||${s.facultyEmail}`;
+    if(!map.has(k)){
+      map.set(k, {
+        program:s.program, semester:s.semester, section:s.section,
+        courseCode:s.courseCode, courseName:(findCourseName(s.courseCode)||""),
+        facultyEmail:s.facultyEmail, facultyName:(findFacultyName(s.facultyEmail)||""),
+        planned: 0, delivered: 0
+      });
+    }
+    map.get(k).delivered += 1;
+  }
+
+  const rows = [...map.values()].map(r=>{
+    const planned = Math.max(0, r.planned);
+    const delivered = Math.max(0, r.delivered);
+    const pct = planned>0 ? Math.min(100, Math.round((delivered/planned)*100)) : (delivered>0 ? 100 : 0);
+    return {...r, pct};
+  });
+
+  return rows.sort((a,b)=> (a.program+a.semester+a.section+a.courseCode).localeCompare(b.program+b.semester+b.section+b.courseCode));
+}
+function findCourseName(code){ return state.mapping.find(x=>x.courseCode===code)?.courseName || ""; }
+function findFacultyName(email){ return state.mapping.find(x=>x.facultyEmail===email)?.facultyName || ""; }
+function sessionFacultyLabel(s){
+  const name = (s?.guestName || s?.facultyName || "").toString().trim();
+  if(name) return name;
+  const em = (s?.facultyEmail || "").toString();
+  const fromMap = findFacultyName(em);
+  return (fromMap || em || "").toString();
+}
+function sessionCourseLabel(s){
+  if(!s) return "";
+  if(s.specialType){
+    const t = (s.specialType||"").toString();
+    const topic = (s.topic||"").toString().trim();
+    return topic ? `${t}: ${topic}` : t;
+  }
+  return (s.courseCode||"").toString();
+}
+function pctBucket(p){
+  if(p < 50) return "0-49";
+  if(p < 80) return "50-79";
+  if(p < 100) return "80-99";
+  return "100";
+}
+function renderDashboard(){
+  $("dashScopeTag").textContent = "Scope: " + scopeLabel();
+
+  const scopedSessions = getScopedSessions();
+  const completion = computeCompletionRows();
+
+  $("statClasses").textContent = scopedSessions.length;
+  $("statCourses").textContent = unique(scopedSessions.map(s=>s.courseCode)).length;
+
+  const avgPct = completion.length
+    ? Math.round(completion.reduce((a,r)=>a+r.pct,0)/completion.length)
+    : 0;
+  $("statCompletion").textContent = `${avgPct}%`;
+
+  const conflicts = computeConflicts(scopedSessions);
+  $("statConflicts").textContent = conflicts.length;
+
+  let filtered = completion;
+  if(completionFilter.type==="delivered"){ filtered = completion.filter(r=> r.delivered>0); }
+  if(completionFilter.type==="pending"){ filtered = completion.filter(r=> r.planned>0 && r.delivered<r.planned); }
+  if(completionFilter.type==="bucket"){ filtered = completion.filter(r=> pctBucket(r.pct)===completionFilter.value); }
+
+  if(completionFilter.type){
+    $("completionFilterTag").style.display="inline-flex";
+    $("completionFilterTag").textContent = `Filter: ${completionFilter.type}${completionFilter.value?("="+completionFilter.value):""}`;
+  } else {
+    $("completionFilterTag").style.display="none";
+  }
+
+  $("completionBody").innerHTML = filtered.map(r=>{
+    const t = r.pct>=100 ? "ok" : (r.pct>=80 ? "warn" : "danger");
+    return `
+      <tr>
+        <td>${escapeHtml(r.program)}</td>
+        <td>${escapeHtml("Sem "+r.semester)}</td>
+        <td>${escapeHtml(r.section)}</td>
+        <td>${escapeHtml(r.courseCode)}<br><span class="muted">${escapeHtml(r.courseName||"")}</span></td>
+        <td>${escapeHtml(r.facultyName||r.facultyEmail)}<br><span class="muted">${escapeHtml(r.facultyEmail)}</span></td>
+        <td><span class="tag">${escapeHtml(r.planned)}</span></td>
+        <td><span class="tag ok">${escapeHtml(r.delivered)}</span></td>
+        <td><span class="tag ${t}">${escapeHtml(r.pct)}%</span></td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="8" class="muted">No mapping/sessions in selected scope.</td></tr>`;
+
+  $("conflictBody").innerHTML = conflicts.slice(0,50).map(c=>{
+    return `
+      <tr>
+        <td>${escapeHtml(c.date)}</td>
+        <td>${escapeHtml(c.start)}–${escapeHtml(c.end)}</td>
+        <td><span class="tag danger">${escapeHtml(c.type)}</span></td>
+        <td>${escapeHtml(c.entity)}</td>
+        <td>${escapeHtml(c.sessions.map(s=> `${s.program} Sem${s.semester} ${s.section} • ${s.courseCode}`).join(" | "))}</td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="5" class="muted">No conflicts detected in scope.</td></tr>`;
+
+  renderDashboardCharts();
+}
+
+function computeConflicts(sessions){
+  const mode = state.settings.conflictMode || "strict";
+  if(mode==="off") return [];
+
+  const byDate = new Map();
+  for(const s of sessions){
+    if(!byDate.has(s.date)) byDate.set(s.date, []);
+    byDate.get(s.date).push(s);
+  }
+
+  const conflicts = [];
+  for(const [date, list] of byDate.entries()){
+    for(let i=0;i<list.length;i++){
+      for(let j=i+1;j<list.length;j++){
+        const a=list[i], b=list[j];
+        const aS=timeToMins(a.startTime), aE=timeToMins(a.endTime);
+        const bS=timeToMins(b.startTime), bE=timeToMins(b.endTime);
+        if(!overlaps(aS,aE,bS,bE)) continue;
+
+        const facultyClash = a.facultyEmail && b.facultyEmail && a.facultyEmail===b.facultyEmail;
+        const roomClash = a.room && b.room && a.room===b.room;
+
+        const consider = (mode==="strict" && (facultyClash || roomClash))
+                      || (mode==="faculty" && facultyClash)
+                      || (mode==="room" && roomClash);
+
+        if(!consider) continue;
+
+        const type = (facultyClash && roomClash) ? "Faculty+Room" : (facultyClash ? "Faculty" : "Room");
+        const entity = facultyClash ? a.facultyEmail : a.room;
+        const start = minsToTime(Math.max(aS,bS));
+        const end   = minsToTime(Math.min(aE,bE));
+        const key = `${date}||${start}||${end}||${type}||${entity}`;
+
+        let existing = conflicts.find(x=>x.key===key);
+        if(!existing){
+          existing = { key, date, start, end, type, entity, sessions: [] };
+          conflicts.push(existing);
+        }
+        existing.sessions.push(a,b);
+        existing.sessions = unique(existing.sessions.map(x=>JSON.stringify(x))).map(x=>JSON.parse(x));
+      }
+    }
+  }
+  conflicts.sort((a,b)=> (a.date+a.start).localeCompare(b.date+b.start));
+  return conflicts;
+}
+
+/* =========================================================
+   DASHBOARD CHARTS (Canvas)
+========================================================= */
+function canvasDPI(canvas){
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width * dpr));
+  const h = Math.max(1, Math.floor(rect.height * dpr));
+  if(canvas.width !== w || canvas.height !== h){
+    canvas.width = w;
+    canvas.height = h;
+  }
+  return { w, h, dpr };
+}
+function clearCanvas(ctx,w,h){ ctx.clearRect(0,0,w,h); }
+function roundRect(ctx, x, y, w, h, r){
+  const rr = Math.max(0, Math.min(r, w/2, h/2));
+  ctx.beginPath();
+  ctx.moveTo(x+rr, y);
+  ctx.arcTo(x+w, y, x+w, y+h, rr);
+  ctx.arcTo(x+w, y+h, x, y+h, rr);
+  ctx.arcTo(x, y+h, x, y, rr);
+  ctx.arcTo(x, y, x+w, y, rr);
+  ctx.closePath();
+}
+function renderDashboardCharts(){
+  const completion = computeCompletionRows();
+  const planned = completion.reduce((a,r)=>a+Math.max(0,r.planned),0);
+  const delivered = completion.reduce((a,r)=>a+Math.max(0,r.delivered),0);
+  const pending = Math.max(0, planned - delivered);
+
+  drawBarDelivered("barDelivered", delivered, pending);
+  drawDonutCompletion("pieCompletion", completion);
+}
+function drawBarDelivered(canvasId, delivered, pending){
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  const { w, h } = canvasDPI(canvas);
+  const ctx = canvas.getContext("2d");
+  clearCanvas(ctx, w, h);
+
+  const labels = ["Delivered", "Pending"];
+  const values = [delivered, pending];
+
+  const padLeft = 18, padRight = 18, padTop = 36, padBottom = 58;
+  const topY = padTop;
+  const baseY = h - padBottom;
+  const chartH = Math.max(1, baseY - topY);
+  const maxV = Math.max(1, ...values);
+
+  const usableW = (w - padLeft - padRight);
+  const barW = Math.floor(usableW / 3);
+  const gap = Math.floor(barW / 2);
+  const x1 = padLeft + gap/2;
+  const xs = [x1, x1 + barW + gap];
+
+  ctx.strokeStyle = "rgba(255,255,255,.12)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(padLeft, baseY);
+  ctx.lineTo(w - padRight, baseY);
+  ctx.stroke();
+
+  const barRects = [];
+  for(let i=0;i<2;i++){
+    const v = values[i];
+    const barH = Math.round((v/maxV) * chartH);
+    const x = xs[i];
+    const y = baseY - barH;
+
+    if(i===0){
+      const grad = ctx.createLinearGradient(x, y, x+barW, baseY);
+      grad.addColorStop(0, "rgba(45,212,191,.85)");
+      grad.addColorStop(1, "rgba(74,163,255,.85)");
+      ctx.fillStyle = grad;
+    } else {
+      const grad2 = ctx.createLinearGradient(x, y, x+barW, baseY);
+      grad2.addColorStop(0, "rgba(255,77,109,.70)");
+      grad2.addColorStop(1, "rgba(251,191,36,.55)");
+      ctx.fillStyle = grad2;
+    }
+
+    roundRect(ctx, x, y, barW, barH, 16);
+    ctx.fill();
+
+    ctx.textAlign = "center";
+    ctx.font = "800 14px " + getComputedStyle(document.body).fontFamily;
+    let labelY = y - 10;
+    const safeTop = 18;
+    if(labelY < safeTop){
+      labelY = Math.min(baseY - 10, y + 18);
+      ctx.fillStyle = "rgba(11,18,32,.85)";
+      ctx.fillText(String(v), x + barW/2, labelY);
+      ctx.fillStyle = "rgba(232,237,247,.92)";
+      ctx.fillText(String(v), x + barW/2, labelY);
+    } else {
+      ctx.fillStyle = "rgba(232,237,247,.92)";
+      ctx.fillText(String(v), x + barW/2, labelY);
+    }
+
+    ctx.fillStyle = "rgba(168,179,207,.95)";
+    ctx.font = "900 12px " + getComputedStyle(document.body).fontFamily;
+    ctx.fillText(labels[i], x + barW/2, baseY + 28);
+
+    barRects.push({ x, y, w: barW, h: barH, label: labels[i] });
+  }
+
+  canvas.onclick = (ev)=>{
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const cx = (ev.clientX - rect.left) * dpr;
+    const cy = (ev.clientY - rect.top) * dpr;
+
+    for(const r of barRects){
+      if(cx>=r.x && cx<=r.x+r.w && cy>=r.y && cy<=r.y+r.h){
+        if(r.label==="Delivered") completionFilter = {type:"delivered", value:null};
+        else completionFilter = {type:"pending", value:null};
+        renderDashboard();
+        return;
+      }
+    }
+    completionFilter = {type:null, value:null};
+    renderDashboard();
+  };
+}
+function drawDonutCompletion(canvasId, completionRows){
+  const canvas = $(canvasId);
+  if(!canvas) return;
+  const { w, h } = canvasDPI(canvas);
+  const ctx = canvas.getContext("2d");
+  clearCanvas(ctx, w, h);
+
+  const buckets = [
+    { key:"0-49", label:"0–49%", count:0, colorA:"rgba(255,77,109,.75)", colorB:"rgba(255,77,109,.35)" },
+    { key:"50-79", label:"50–79%", count:0, colorA:"rgba(251,191,36,.75)", colorB:"rgba(251,191,36,.35)" },
+    { key:"80-99", label:"80–99%", count:0, colorA:"rgba(74,163,255,.75)", colorB:"rgba(74,163,255,.35)" },
+    { key:"100", label:"100%", count:0, colorA:"rgba(45,212,191,.80)", colorB:"rgba(45,212,191,.40)" }
+  ];
+
+  for(const r of completionRows){
+    const b = pctBucket(r.pct);
+    buckets.find(x=>x.key===b).count++;
+  }
+  const total = Math.max(1, buckets.reduce((a,b)=>a+b.count,0));
+
+  const cx = Math.floor(w/2);
+  const cy = Math.floor(h/2);
+  const rOuter = Math.min(w,h) * 0.34;
+  const rInner = rOuter * 0.62;
+
+  const legendX = 12, legendY = 12;
+
+  let start = -Math.PI/2;
+  const hit = [];
+
+  for(const b of buckets){
+    const frac = b.count / total;
+    const ang = frac * Math.PI*2;
+    const end = start + ang;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, rOuter, start, end);
+    ctx.closePath();
+    ctx.fillStyle = b.colorB;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, rOuter, start, end);
+    ctx.arc(cx, cy, rInner, end, start, true);
+    ctx.closePath();
+    ctx.fillStyle = b.colorA;
+    ctx.fill();
+
+    hit.push({ start, end, bucket: b.key });
+    start = end;
+  }
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, rInner, 0, Math.PI*2);
+  ctx.fillStyle = "rgba(11,18,32,.55)";
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(232,237,247,.92)";
+  ctx.font = "900 16px " + getComputedStyle(document.body).fontFamily;
+  ctx.textAlign = "center";
+  ctx.fillText("Completion", cx, cy - 4);
+  ctx.fillStyle = "rgba(168,179,207,.95)";
+  ctx.font = "800 12px " + getComputedStyle(document.body).fontFamily;
+  ctx.fillText(`${completionRows.length} courses`, cx, cy + 16);
+
+  ctx.textAlign = "left";
+  let ly = legendY;
+  for(const b of buckets){
+    ctx.fillStyle = b.colorA;
+    roundRect(ctx, legendX, ly, 16, 10, 4);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(232,237,247,.90)";
+    ctx.font = "800 12px " + getComputedStyle(document.body).fontFamily;
+    ctx.fillText(`${b.label}`, legendX + 22, ly + 10);
+
+    ctx.fillStyle = "rgba(168,179,207,.92)";
+    ctx.font = "800 12px " + getComputedStyle(document.body).fontFamily;
+    ctx.fillText(`(${b.count})`, legendX + 78, ly + 10);
+
+    ly += 18;
+  }
+
+  canvas.onclick = (ev)=>{
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const mx = (ev.clientX - rect.left) * dpr;
+    const my = (ev.clientY - rect.top) * dpr;
+
+    const dx = mx - cx, dy = my - cy;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < rInner || dist > rOuter) return;
+
+    let ang = Math.atan2(dy, dx);
+    if(ang < -Math.PI/2) ang += Math.PI*2;
+    const norm = ang;
+
+    for(const s of hit){
+      let st = s.start, en = s.end;
+      if(st < -Math.PI/2) st += Math.PI*2;
+      if(en < -Math.PI/2) en += Math.PI*2;
+      if(en < st) en += Math.PI*2;
+
+      let a = norm;
+      if(a < st) a += Math.PI*2;
+
+      if(a >= st && a <= en){
+        completionFilter = {type:"bucket", value: s.bucket};
+        renderDashboard();
+        return;
+      }
+    }
+    completionFilter = {type:null, value:null};
+    renderDashboard();
+  };
+}
+
+/* =========================================================
+   ROSTER
+========================================================= */
+function setRosterDefaultDates(){
+  const d = new Date();
+  const from = toDateStr(d);
+  const to = toDateStr(new Date(d.getFullYear(), d.getMonth(), d.getDate()+7));
+  $("rFrom").value = from;
+  $("rTo").value = to;
+
+  $("rViewMode").value = "day";
+  $("rSemester").value = "";
+  $("rProgram").value = "";
+  $("rSection").value = "";
+  $("rRoom").value = "";
+  $("rFaculty").value = isFaculty() ? state.user.email : "";
+  renderRoster();
+}
+function getRosterFilters(){
+  const from = $("rFrom").value;
+  const to = $("rTo").value;
+  const program = $("rProgram").value || "";
+  const semester = $("rSemester").value || "";
+  const section = $("rSection").value || "";
+  const facultyEmail = isFaculty() ? state.user.email : ($("rFaculty").value || "");
+  const room = $("rRoom").value || "";
+  const view = $("rViewMode").value || "day";
+  return {from,to,program,semester,section,facultyEmail,room,view};
+}
+function renderRoster(){
+  if(!state.user) return;
+  const f = getRosterFilters();
+  if(!f.from || !f.to){ $("rosterOutput").innerHTML = `<div class="muted">Select date range.</div>`; return; }
+
+  const from = new Date(f.from);
+  const to = new Date(f.to);
+  const sessions = state.sessions.filter(s=>{
+    if(s.date < f.from || s.date > f.to) return false;
+    if(f.program && s.program!==f.program) return false;
+    if(f.semester && String(s.semester)!==String(f.semester)) return false;
+    if(f.section && s.section!==f.section) return false;
+    if(f.facultyEmail && s.facultyEmail!==f.facultyEmail) return false;
+    if(f.room && s.room!==f.room) return false;
+    return true;
+  }).sort((a,b)=> (a.date+a.startTime).localeCompare(b.date+b.startTime));
+
+  $("rosterCountTag").textContent = `${sessions.length} sessions`;
+
+  const slots = buildDaySlots();
+  const lunchSlot = slots.find(x=>x.type==="lunch");
+  const lunchTag = lunchSlot ? `${lunchSlot.start} (${state.settings.lunchMins}m)` : "—";
+
+  if(f.view==="day"){
+    const byDate = new Map();
+    for(const s of sessions){
+      if(!byDate.has(s.date)) byDate.set(s.date, []);
+      byDate.get(s.date).push(s);
+    }
+
+    let html = "";
+    for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
+      const ds = toDateStr(d);
+      const day = d.getDay();
+      const isWorking = state.settings.workingDays.includes(String(day));
+      const list = byDate.get(ds) || [];
+
+      html += `
+        <div class="card" style="margin-bottom:12px;">
+          <div class="row">
+            <div>
+              <div class="tag ${isWorking ? "ok":"warn"}">${isWorking ? "Working Day":"Non-working Day"}</div>
+              <div style="margin-top:6px; font-weight:900;">${ds}</div>
+              <div class="muted">${d.toLocaleDateString(undefined,{weekday:"long", month:"short", day:"2-digit"})}</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="tag">Lunch: ${escapeHtml(lunchTag)}</div>
+          </div>
+          <div class="divider"></div>
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Program</th>
+                  <th>Sem</th>
+                  <th>Section</th>
+                  <th>Course</th>
+                  <th>Faculty</th>
+                  <th>Room</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${
+                  list.length
+                    ? list.map(s=>`
+                      <tr>
+                        <td>${escapeHtml(s.startTime)}–${escapeHtml(s.endTime)}</td>
+                        <td>${escapeHtml(s.program)}</td>
+                        <td>${escapeHtml("Sem "+s.semester)}</td>
+                        <td>${escapeHtml(s.section)}</td>
+                        <td>${escapeHtml(s.courseCode)}<br><span class="muted">${escapeHtml(findCourseName(s.courseCode))}</span></td>
+                        <td>${escapeHtml(sessionFacultyLabel(s))}<br><span class="muted">${escapeHtml(s.facultyEmail)}</span></td>
+                        <td>${escapeHtml(s.room||"-")}</td>
+                        <td>${escapeHtml(s.remarks||"")}</td>
+                      </tr>
+                    `).join("")
+                    : `<tr><td colspan="8" class="muted">No sessions scheduled.</td></tr>`
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+    $("rosterOutput").innerHTML = html || `<div class="muted">No data.</div>`;
+    return;
+  }
+
+  // grid view
+  const dayList = [];
+  for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)) dayList.push(toDateStr(d));
+
+  const map = new Map();
+  for(const ds of dayList) map.set(ds, []);
+  for(const s of sessions){
+    if(map.has(s.date)) map.get(s.date).push(s);
+  }
+
+  let html = `
+    <div class="card">
+      <h2>Time Grid</h2>
+      <p class="hint" style="margin:0;">Slots from Settings. Lunch slot is highlighted.</p>
+      <div class="divider"></div>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width:150px;">Time Slot</th>
+              ${dayList.map(ds=>`<th style="min-width:240px;">${escapeHtml(ds)}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+  `;
+
+  for(const sl of slots){
+    const isLunch = sl.type==="lunch";
+    html += `<tr>
+      <td>${isLunch ? `<span class="tag warn">Lunch</span> ` : `<span class="tag ok">${escapeHtml(sl.label)}</span> `}
+          <span class="muted">${escapeHtml(sl.start)}–${escapeHtml(sl.end)}</span></td>`;
+
+    for(const ds of dayList){
+      const list = map.get(ds) || [];
+      const hits = list.filter(s=>{
+        const sS=timeToMins(s.startTime), sE=timeToMins(s.endTime);
+        return overlaps(sl.startM, sl.endM, sS, sE);
+      });
+
+      if(isLunch){
+        html += `<td class="muted">—</td>`;
+      } else if(!hits.length){
+        html += `<td class="muted">—</td>`;
+      } else {
+        html += `<td>${hits.map(s=>`
+          <div class="tag ok" style="margin-bottom:6px;">
+            ${escapeHtml(s.program)} Sem${escapeHtml(s.semester)} ${escapeHtml(s.section)} • ${escapeHtml(s.courseCode)} • ${escapeHtml(s.room||"-")}
+          </div>
+          <div class="muted" style="margin-bottom:6px;">
+            ${escapeHtml(sessionFacultyLabel(s))}
+          </div>
+        `).join("<div class='divider'></div>")}</td>`;
+      }
+    }
+    html += `</tr>`;
+  }
+
+  html += `</tbody></table></div></div>`;
+  $("rosterOutput").innerHTML = html;
+}
+
+/* =========================================================
+   SCHEDULE BUILDER (NEW GRID LOGIC)
+========================================================= */
+function defaultRoomFor(program, section){
+  return state.masters.classroomMap?.[program]?.[section] || (state.masters.rooms?.[0] || "");
+}
+function getBuilderFilter(){
+  const date = $("sbDate").value;
+  const semester = normSem($("sbSemester").value);
+  return { date, semester };
+}
+
+function sessionsForDateSem(date, semester){
+  return state.sessions.filter(s => s.date===date && String(s.semester)===String(semester));
+}
+
+function refreshBuilderCountTag(){
+  const {date, semester} = getBuilderFilter();
+  if(!date || !semester){ $("sbCountTag").textContent = "0 sessions"; return; }
+  const count = sessionsForDateSem(date, semester).length;
+  $("sbCountTag").textContent = `${count} sessions`;
+}
+
+function renderBuilderGrid(){
+  if(!(isCorporate() || isRegistrar())){ toast("Access denied","Only Corporate / Registrar can schedule."); return; }
+  const {date, semester} = getBuilderFilter();
+  if(!date || !semester){ toast("Missing","Choose Date and Semester."); return; }
+
+  const builderLocked = (isRegistrar() && isDateSemPublished(date, semester));
+  window.__builderLocked = builderLocked;
+  if(builderLocked){
+    toast("View only","This Date + Semester is already Published. Registrar\'s Office can view but cannot edit from Schedule Builder.");
+  }
+
+  if(!state.mapping.length){
+    toast("Mapping required","Upload Faculty Mapping first (Mapping tab).");
+    return;
+  }
+
+  const slots = buildDaySlots();
+  const programs = state.masters.programs || [];
+  const sections = state.masters.sections || [];
+  const rooms = state.masters.rooms || [];
+
+  // Build period headers
+  const headCols = slots.map(sl=>{
+    const isLunch = sl.type==="lunch";
+    const title = isLunch ? "Lunch" : sl.label;
+    const sub = `${sl.start}–${sl.end}`;
+    return `<th class="${isLunch ? "lunchCol":""}">
+      <div style="font-weight:900;">${escapeHtml(title)}</div>
+      <div class="muted" style="font-size:11.5px;">${escapeHtml(sub)}</div>
+    </th>`;
+  }).join("");
+
+  // Precompute bookings (faculty+room per slot)
+  const todays = sessionsForDateSem(date, semester);
+  const slotKey = (sl)=> `${sl.start}||${sl.end}`;
+  const facultyBooked = new Map(); // slotKey -> Set(facultyEmail)
+  const roomBooked = new Map();    // slotKey -> Set(room)
+
+  for(const sl of slots){
+    if(sl.type!=="class") continue;
+    const k = slotKey(sl);
+    facultyBooked.set(k, new Set());
+    roomBooked.set(k, new Set());
+  }
+  for(const s of todays){
+    // map session into a slot if matching timing
+    const k = `${s.startTime}||${s.endTime}`;
+    if(facultyBooked.has(k) && s.facultyEmail) facultyBooked.get(k).add(s.facultyEmail);
+    if(roomBooked.has(k) && s.room) roomBooked.get(k).add(s.room);
+  }
+
+  // Grid rows = Program x Section
+  let bodyRows = "";
+  // Only show rows that exist in Default Classroom Mapping (Program → Section → Room)
+  const cm = state.masters.classroomMap || {};
+  const rowPairs = [];
+  for(const p of Object.keys(cm)){
+    const secsObj = cm[p] || {};
+    for(const sec of Object.keys(secsObj)){
+      rowPairs.push([p, sec]);
+    }
+  }
+  rowPairs.sort((a,b)=> (a[0]===b[0] ? String(a[1]).localeCompare(String(b[1])) : String(a[0]).localeCompare(String(b[0]))));
+
+  for(const [p, sec] of rowPairs){
+      // Room select (merged column)
+      const rowRoomId = `sbRoom__${encodeURIComponent(p)}__${encodeURIComponent(sec)}`;
+      const roomDefault = defaultRoomFor(p, sec);
+
+      // cells
+      const cells = slots.map(sl=>{
+        if(sl.type==="lunch"){
+          return `<td class="lunchCol"><span class="tag warn">Lunch</span></td>`;
+        }
+
+        const k = slotKey(sl);
+
+        // Existing session for this row+slot?
+        const existing = todays.find(x =>
+          x.program===p &&
+          x.section===sec &&
+          String(x.semester)===String(semester) &&
+          x.startTime===sl.start &&
+          x.endTime===sl.end
+        );
+
+        // Available mapping options for this program/sem/section
+        const mapRows = state.mapping.filter(m =>
+          m.program===p &&
+          normSem(m.semester)===normSem(semester) &&
+          m.section===sec
+        );
+
+        // If no mapping, cell shows disabled note
+        if(!mapRows.length){
+          return `<td><div class="muted">No mapping</div><div class="disabledNote">Upload mapping for ${escapeHtml(p)} Sem${escapeHtml(semester)} ${escapeHtml(sec)}.</div></td>`;
+        }
+
+        // Build course options (allow multiple faculty for same subject if mapping has multiple rows)
+const courseOptions = mapRows
+  .slice()
+  .sort((a,b)=>{
+    const ac = String(a.courseCode||"");
+    const bc = String(b.courseCode||"");
+    if(ac===bc){
+      const af = String(a.facultyName||a.facultyEmail||"");
+      const bf = String(b.facultyName||b.facultyEmail||"");
+      return af.localeCompare(bf);
+    }
+    return ac.localeCompare(bc);
+  })
+  .map(pick=>{
+    const cc = pick?.courseCode || "";
+    const courseName = pick?.courseName || "";
+    const facultyEmail = pick?.facultyEmail || "";
+    const facultyName = pick?.facultyName || facultyEmail;
+
+    // Determine if selecting this mapping would violate faculty booking in this slot
+    // Allow if it's the existing session itself.
+    const isAlreadyThis = existing && (
+      (existing.mappingId && pick?.id && existing.mappingId===pick.id) ||
+      (existing.courseCode===cc && existing.facultyEmail===facultyEmail)
+    );
+    const booked = facultyBooked.get(k)?.has(facultyEmail);
+    const disabled = !isAlreadyThis && booked;
+
+    const label = `${cc}${courseName ? " - "+courseName : ""}  •  ${facultyName || facultyEmail}`;
+    return {
+      value: (pick && pick.id) ? pick.id : cc,
+      label,
+      facultyEmail,
+      facultyName,
+      disabled
+    };
+
+  });
+
+
+  // Add special session types (applicable for all programs/sections)
+  SPECIAL_SESSION_TYPES.forEach(t=>{
+    courseOptions.push({
+      value: `SP::${t}`,
+      label: `${t}  •  Topic + Guest (mandatory)`,
+      facultyEmail: "",
+      facultyName: "",
+      disabled: false,
+      specialType: t
+    });
+  });
+
+
+
+        const selId = `sbSel__${encodeURIComponent(p)}__${encodeURIComponent(sec)}__${encodeURIComponent(sl.start)}__${encodeURIComponent(sl.end)}`;
+
+        // selected course code
+                const selected = existing ? (existing.specialType ? `SP::${existing.specialType}` : (existing.mappingId || (state.mapping.find(m=>m.program===p && normSem(m.semester)===normSem(semester) && m.section===sec && m.courseCode===existing.courseCode && (m.facultyEmail||"").toLowerCase()===(existing.facultyEmail||"").toLowerCase())?.id || (mappingPick(p, semester, sec, existing.courseCode)?.id || "")))) : "";
+
+        // If room conflict would happen, we will block on change, but also hint if current room already booked
+        return `<td>
+          <div class="cellHead">
+            <span class="tag ok">${escapeHtml(sl.label)}</span>
+            <span class="muted">${escapeHtml(sl.start)}–${escapeHtml(sl.end)}</span>
+          </div>
+
+          <div class="cellMeta">Pick Course (Faculty auto)</div>
+          <select class="miniSelect" id="${selId}" ${builderLocked ? "disabled" : ""}
+            data-date="${escapeHtml(date)}"
+            data-sem="${escapeHtml(semester)}"
+            data-program="${escapeHtml(p)}"
+            data-section="${escapeHtml(sec)}"
+            data-start="${escapeHtml(sl.start)}"
+            data-end="${escapeHtml(sl.end)}"
+          >
+            <option value="">— No Class —</option>
+            ${
+              courseOptions.map(o=>{
+                return `<option value="${escapeHtml(o.value)}" ${o.value===selected?"selected":""} ${o.disabled?"disabled":""}>
+                  ${escapeHtml(o.label)}${o.disabled ? "  (Booked)" : ""}
+                </option>`;
+              }).join("")
+            }
+          </select>
+          <div class="muted" style="margin-top:6px;">
+            ${existing ? `Selected: <b>${escapeHtml(existing.courseCode)}</b> • ${escapeHtml(findFacultyName(existing.facultyEmail)||existing.facultyEmail)}` : "—"}
+          </div>
+        </td>`;
+      }).join("");
+
+      bodyRows += `
+        <tr>
+          <td style="min-width:190px;">
+            <div style="font-weight:950;">${escapeHtml(p)} • Sec ${escapeHtml(sec)}</div>
+            <div class="muted" style="margin-top:4px;">Sem ${escapeHtml(semester)}</div>
+            <div style="margin-top:8px;">
+              <label style="margin:0 0 6px;">Room</label>
+              <select class="miniSelect" id="${rowRoomId}">
+                ${rooms.map(r=>`<option value="${escapeHtml(r)}" ${r=== (existingRoomForRow(date, semester, p, sec) || roomDefault) ? "selected":""}>${escapeHtml(r)}</option>`).join("")}
+              </select>
+              <div class="disabledNote">Default from Settings → Classroom Mapping</div>
+            </div>
+          </td>
+          ${cells}
+        </tr>
+      `;
+  }
+
+  const table = `
+    <table class="schedTable">
+      <thead>
+        <tr>
+          <th style="min-width:220px;">Program • Section • Room</th>
+          ${headCols}
+        </tr>
+      </thead>
+      <tbody>
+        ${bodyRows || `<tr><td colspan="${slots.length+1}" class="muted">No program/section mappings found. Please add mappings in Settings → Masters and Default Classroom Mapping.</td></tr>`}
+      </tbody>
+    </table>
+  `;
+
+  $("sbGridWrap").innerHTML = table;
+
+  // Lock controls if published (Registrar view-only)
+  try{
+    $("btnSaveScheduleDraft").disabled = !!builderLocked;
+    $("btnClearBuilderGrid").disabled = !!builderLocked;
+  }catch(e){}
+
+  // Wire room change + cell change handlers
+  // 1) Room select affects only NEW/UPDATED sessions for that row on this date+sem
+  document.querySelectorAll("[id^='sbRoom__']").forEach(el=>{
+    el.addEventListener("change", ()=>{
+      // If there are already sessions for this row, we do not auto-update their room silently
+      // (Room is a per-session field). We will just re-render grid so user sees current state.
+      renderBuilderGrid();
+    });
+  });
+
+  // 2) On course selection change: create/update/delete session; enforce conflicts.
+  document.querySelectorAll("[id^='sbSel__']").forEach(el=>{
+    el.addEventListener("change", (ev)=> onBuilderCellChange(ev.target));
+  });
+
+  refreshBuilderGridDisables(date, semester);
+  refreshBuilderCountTag();
+  toast("Loaded", `Grid loaded for ${date} • Sem ${semester}`);
+}
+
+function existingRoomForRow(date, semester, program, section){
+  // If row already has at least one session, keep that room as a hint for selection (most frequent)
+  const list = state.sessions.filter(s =>
+    s.date===date &&
+    String(s.semester)===String(semester) &&
+    s.program===program &&
+    s.section===section
+  );
+  if(!list.length) return "";
+  const counts = new Map();
+  for(const s of list){
+    const r = s.room || "";
+    if(!r) continue;
+    counts.set(r, (counts.get(r)||0)+1);
+  }
+  let best="", bestN=0;
+  for(const [r,n] of counts.entries()){
+    if(n>bestN){ best=r; bestN=n; }
+  }
+  return best;
+}
+
+function mappingPick(program, semester, section, courseCode){
+  return state.mapping.find(m =>
+    m.program===program &&
+    normSem(m.semester)===normSem(semester) &&
+    m.section===section &&
+    m.courseCode===courseCode
+  ) || null;
+}
+function mappingPickById(mappingId){
+  return state.mapping.find(m => m.id===mappingId) || null;
+}
+function resolveMappingSelection(program, semester, section, selVal){
+  if(!selVal) return null;
+  // Prefer mappingId (new builder mode). Fallback to legacy courseCode.
+  const byId = mappingPickById(selVal);
+  if(byId) return byId;
+  return mappingPick(program, semester, section, selVal);
+}
+
+function detectSlotConflict(date, startTime, endTime, facultyEmail, room, ignoreSessionId){
+  const mode = state.settings.conflictMode || "strict";
+  if(mode==="off") return "";
+
+  const cS=timeToMins(startTime), cE=timeToMins(endTime);
+  const sameDay = state.sessions.filter(s=>s.date===date && s.id!==ignoreSessionId);
+
+  for(const s of sameDay){
+    const sS=timeToMins(s.startTime), sE=timeToMins(s.endTime);
+    if(!overlaps(cS,cE,sS,sE)) continue;
+
+    const facultyClash = facultyEmail && s.facultyEmail===facultyEmail;
+    const roomClash = room && s.room===room;
+
+    const consider = (mode==="strict" && (facultyClash || roomClash))
+                  || (mode==="faculty" && facultyClash)
+                  || (mode==="room" && roomClash);
+
+    if(!consider) continue;
+
+    if(facultyClash && roomClash) return `Faculty and Room both clash with: ${s.program} Sem${s.semester} ${s.section} (${s.startTime}-${s.endTime})`;
+    if(facultyClash) return `Faculty clash with: ${s.program} Sem${s.semester} ${s.section} (${s.startTime}-${s.endTime})`;
+    if(roomClash) return `Room clash with: ${s.program} Sem${s.semester} ${s.section} (${s.startTime}-${s.endTime})`;
+  }
+  return "";
+}
+
+function onBuilderCellChange(selectEl){
+  if(!(isCorporate() || isRegistrar())){ toast("Access denied","Only Corporate / Registrar can schedule."); return; }
+
+  const date = selectEl.dataset.date;
+  const semester = selectEl.dataset.sem;
+  const program = selectEl.dataset.program;
+  const section = selectEl.dataset.section;
+  const startTime = selectEl.dataset.start;
+  const endTime = selectEl.dataset.end;
+
+    const selVal = selectEl.value || "";
+  const remarks = $("sbRemarks").value || "";
+
+  // determine room from row selector
+  const rowRoomId = `sbRoom__${encodeURIComponent(program)}__${encodeURIComponent(section)}`;
+  const roomEl = document.getElementById(rowRoomId);
+  const room = roomEl?.value || defaultRoomFor(program, section);
+
+  // find existing session for this cell
+  const existing = state.sessions.find(s =>
+    s.date===date &&
+    String(s.semester)===String(semester) &&
+    s.program===program &&
+    s.section===section &&
+    s.startTime===startTime &&
+    s.endTime===endTime
+  );
+
+  // SPECIAL SESSION HANDLING (Non-mapping options)
+  if(isSpecialValue(selVal)){
+    const type = specialTypeFromValue(selVal);
+    const prevVal = existing ? (existing.specialType ? `SP::${existing.specialType}` : (existing.mappingId || "")) : "";
+    const info = promptTopicGuest(type, existing);
+    if(!info){
+      // revert
+      selectEl.value = prevVal;
+      updateBuilderCellSummary(selectEl, existing || null);
+      return;
+    }
+
+    const room = (roomEl && roomEl.value) ? roomEl.value : "";
+    const {topic, guestName} = info;
+    const courseCode = sessionCourseLabel({specialType:type, topic});
+    const facultyEmail = ""; // guest sessions do not occupy faculty booking
+    const conflict = detectSlotConflict(date, startTime, endTime, facultyEmail, room, existing?.id);
+    if(conflict){
+      toast("Conflict detected", conflict);
+      selectEl.value = prevVal;
+      updateBuilderCellSummary(selectEl, existing || null);
+      return;
+    }
+
+    // Upsert special session
+    if(existing){
+      existing.mappingId = "";
+      existing.courseCode = courseCode;
+      existing.courseName = "";
+      existing.facultyEmail = "";
+      existing.facultyName = guestName;
+      existing.guestName = guestName;
+      existing.topic = topic;
+      existing.specialType = type;
+      existing.room = room;
+      existing.remarks = remarks;
+    } else {
+      const id = genId("X");
+      state.sessions.push({
+        id,
+        date,
+        startTime,
+        endTime,
+        program,
+        semester,
+        section,
+        mappingId: "",
+        courseCode,
+        courseName: "",
+        facultyEmail: "",
+        facultyName: guestName,
+        guestName,
+        topic,
+        specialType: type,
+        room,
+        remarks,
+        createdAt: nowISO()
+      });
+    }
+
+    save(KEYS.SESSIONS, state.sessions);
+    renderSessionsTable();
+    renderDashboard();
+    refreshBuilderCountTag();
+
+    const saved = state.sessions.find(s=> s.date===date && s.program===program && s.section===section && s.startTime===startTime && s.endTime===endTime);
+    updateBuilderCellSummary(selectEl, saved || null);
+    toast("Saved", `${program} ${section} ${startTime}-${endTime} • ${courseCode}`);
+    refreshBuilderGridDisables(date, semester);
+    return;
+  }
+
+
+  if(!selVal){
+    // delete existing if any
+    if(existing){
+      state.sessions = state.sessions.filter(s=>s.id!==existing.id);
+      save(KEYS.SESSIONS, state.sessions);
+      renderSessionsTable();
+      renderDashboard();
+      refreshBuilderCountTag();
+      toast("Cleared", `Removed class: ${program} ${section} ${startTime}-${endTime}`);
+      // refresh disabled options immediately (no need to reload grid)
+      refreshBuilderGridDisables(date, semester);
+      updateBuilderCellSummary(selectEl, null);
+    }
+    return;
+  }
+
+    const pick = resolveMappingSelection(program, semester, section, selVal);
+  if(!pick){
+    toast("Mapping missing", "Selected course has no mapping row. Please fix in Faculty Mapping.");
+    // revert selection
+        selectEl.value = existing ? (existing.mappingId || "") : "";
+    return;
+  }
+
+  const mappingId = pick.id || "";
+  const courseCode = pick.courseCode || "";
+  const facultyEmail = pick.facultyEmail;
+  const conflict = detectSlotConflict(date, startTime, endTime, facultyEmail, room, existing?.id);
+  if(conflict){
+    toast("Conflict detected", conflict);
+    // revert selection
+    selectEl.value = existing ? (existing.mappingId || "") : "";
+    return;
+  }
+
+  // Upsert session
+  if(existing){
+      existing.mappingId = mappingId;
+  existing.courseCode = courseCode;
+    existing.facultyEmail = facultyEmail;
+    existing.room = room;
+    existing.remarks = remarks;
+  } else {
+      state.sessions.push({
+      id: genId("S"),
+      mappingId,
+      date,
+      startTime,
+      endTime,
+      program,
+      semester,
+      section,
+      courseCode,
+      facultyEmail,
+      room,
+      remarks,
+      createdAt: nowISO()
+    });
+  }
+
+  save(KEYS.SESSIONS, state.sessions);
+  renderSessionsTable();
+  renderDashboard();
+  refreshBuilderCountTag();
+
+  toast("Saved", `${program} ${section} ${startTime}-${endTime} • ${courseCode}`);
+  updateBuilderCellSummary(selectEl, state.sessions.find(s=>s.id===(existing?existing.id:null) || (s.date===date && String(s.semester)===String(semester) && s.program===program && s.section===section && s.startTime===startTime && s.endTime===endTime)));
+  // refresh disabled options immediately (no need to reload grid)
+  refreshBuilderGridDisables(date, semester);
+}
+
+
+function updateBuilderCellSummary(selectEl, session){
+  try{
+    // The summary div is the next element after the select
+    const sumDiv = selectEl?.nextElementSibling;
+    if(!sumDiv || !sumDiv.classList.contains("muted")) return;
+    if(session){
+      const fac = sessionFacultyLabel(session);
+      sumDiv.innerHTML = `Selected: <b>${escapeHtml(sessionCourseLabel(session))}</b> • ${escapeHtml(fac)}`;
+    } else {
+      sumDiv.innerHTML = "—";
+    }
+  }catch(e){}
+}
+
+function refreshBuilderGridDisables(date, semester){
+  // Updates option disabled state based on current sessions (faculty conflict) WITHOUT re-rendering the grid.
+  try{
+    const todays = state.sessions.filter(s => s.date===date && String(s.semester)===String(semester));
+    const facultyBooked = new Map(); // slotKey -> Set(facultyEmail)
+
+    for(const s of todays){
+      const k = `${s.startTime}||${s.endTime}`;
+      if(!facultyBooked.has(k)) facultyBooked.set(k, new Set());
+      if(s.facultyEmail) facultyBooked.get(k).add(s.facultyEmail);
+    }
+
+    document.querySelectorAll("[id^='sbSel__']").forEach(sel=>{
+      if(sel.tagName!=="SELECT") return;
+      if(sel.dataset.date!==date) return;
+      if(String(sel.dataset.sem)!==String(semester)) return;
+
+      const program = sel.dataset.program || "";
+      const section = sel.dataset.section || "";
+      const startTime = sel.dataset.start || "";
+      const endTime = sel.dataset.end || "";
+      const k = `${startTime}||${endTime}`;
+
+      const existing = state.sessions.find(s =>
+        s.date===date &&
+        String(s.semester)===String(semester) &&
+        s.program===program &&
+        s.section===section &&
+        s.startTime===startTime &&
+        s.endTime===endTime
+      );
+
+      // For each option: disable if its faculty already booked in that slot (unless it is the already-selected mapping)
+      const bookedSet = facultyBooked.get(k) || new Set();
+      Array.from(sel.options || []).forEach(opt=>{
+        const val = opt.value || "";
+        if(!val) { opt.disabled = false; return; }
+
+        if(isSpecialValue(val)) { opt.disabled = false; return; }
+
+        const pick = resolveMappingSelection(program, semester, section, val);
+        if(!pick){ opt.disabled = false; return; }
+        const fac = (pick.facultyEmail || "").toLowerCase();
+
+        const isAlreadyThis = existing && (
+          (existing.mappingId && pick.id && existing.mappingId===pick.id) ||
+          (existing.courseCode===pick.courseCode && (existing.facultyEmail||"").toLowerCase()===fac)
+        );
+
+        const shouldDisable = !isAlreadyThis && fac && bookedSet.has(fac);
+        opt.disabled = !!shouldDisable;
+
+        // Keep "(Booked)" hint consistent
+        const baseLabel = (opt.textContent || "").replace(/\s+\(Booked\)\s*$/,"");
+        opt.textContent = shouldDisable ? (baseLabel + "  (Booked)") : baseLabel;
+      });
+    });
+  }catch(e){}
+}
+
+
+function clearBuilderForDateSem(){
+  if(!(isCorporate() || isRegistrar())){ toast("Access denied","Only Corporate / Registrar can schedule."); return; }
+  const {date, semester} = getBuilderFilter();
+  if(!date || !semester){ toast("Missing","Choose Date and Semester."); return; }
+  if(isRegistrar() && isDateSemPublished(date, semester)){
+    restricted("Published schedule can\'t be cleared by Registrar\'s Office. Please contact Corporate Process.");
+    return;
+  }
+  const ok = confirm(`Clear ALL scheduled classes for ${date} Sem ${semester}?`);
+  if(!ok) return;
+
+  state.sessions = state.sessions.filter(s => !(s.date===date && String(s.semester)===String(semester)));
+  save(KEYS.SESSIONS, state.sessions);
+
+  renderSessionsTable();
+  renderDashboard();
+  refreshBuilderCountTag();
+  $("sbGridWrap").innerHTML = `<div class="muted">Cleared. Click “Load Grid” to render again.</div>`;
+  toast("Cleared", `All sessions removed for ${date} Sem ${semester}`);
+}
+
+/* =========================================================
+   SESSIONS TABLE
+========================================================= */
+function renderSessionsTable(){
+  const list = [...state.sessions].sort((a,b)=> (b.date+b.startTime).localeCompare(a.date+a.startTime)).slice(0,200);
+  $("sessionsBody").innerHTML = list.map(s=>`
+    <tr>
+      <td>${escapeHtml(s.date)}</td>
+      <td>${escapeHtml(s.startTime)}–${escapeHtml(s.endTime)}</td>
+      <td>${escapeHtml(s.program)}</td>
+      <td>${escapeHtml("Sem "+s.semester)}</td>
+      <td>${escapeHtml(s.section)}</td>
+      <td>${escapeHtml(s.courseCode)}<br><span class="muted">${escapeHtml(findCourseName(s.courseCode))}</span></td>
+      <td>${escapeHtml(sessionFacultyLabel(s))}</td>
+      <td>${escapeHtml(s.room||"-")}</td>
+      <td>${escapeHtml(s.remarks||"")}</td>
+      <td>
+        <button class="btn danger small" onclick="deleteSession('${escapeHtml(s.id)}')">Delete</button>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="10" class="muted">No sessions created yet.</td></tr>`;
+}
+function deleteSession(id){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can delete sessions."); return; }
+  const ok = confirm("Delete this session?");
+  if(!ok) return;
+  state.sessions = state.sessions.filter(s=>s.id!==id);
+  save(KEYS.SESSIONS, state.sessions);
+  renderSessionsTable();
+  renderDashboard();
+  refreshBuilderCountTag();
+  toast("Deleted","Session removed");
+}
+
+/* =========================================================
+   FACULTY COURSE MAPPING (CSV) + EDIT/DELETE
+========================================================= */
+function downloadMappingTemplate(){
+  const headers = ["program","semester","section","courseCode","courseName","facultyEmail","facultyName","plannedSessions"];
+  const sample = ["PGDM","1","A","MKT101","Marketing Management","faculty1@globsyn.edu.in","Faculty Name","20"];
+  const csv = headers.join(",") + "\n" + sample.map(v=> `"${String(v).replaceAll('"','""')}"`).join(",") + "\n";
+  downloadBlob(csv, "GBS_FacultyCourseMapping_Template.csv", "text/csv;charset=utf-8");
+  toast("Template downloaded","Fill and upload the Mapping CSV");
+}
+
+async function uploadMappingCsv(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can upload mapping."); return; }
+  const file = $("mappingFile").files?.[0];
+  if(!file){ toast("No file","Choose a CSV file first."); return; }
+  const text = await file.text();
+  const rows = parseCSV(text);
+  if(rows.length < 2){ toast("Invalid","CSV must have header + at least 1 row"); return; }
+
+  const header = rows[0].map(h => (h||"").trim());
+  const required = ["program","semester","section","courseCode","courseName","facultyEmail","facultyName","plannedSessions"];
+  const miss = required.filter(x=>!header.includes(x));
+  if(miss.length){ toast("Template mismatch","Missing header(s): "+miss.join(", ")); return; }
+
+  const idx = {}; header.forEach((h,i)=> idx[h]=i);
+
+  const data = [];
+  for(let r=1;r<rows.length;r++){
+    const line = rows[r];
+    const get = (h)=> (line[idx[h]] ?? "").toString().trim();
+    const rec = {
+      id: genId("M"),
+      program: get("program"),
+      semester: normSem(get("semester")),
+      section: get("section"),
+      courseCode: get("courseCode"),
+      courseName: get("courseName"),
+      facultyEmail: get("facultyEmail").toLowerCase(),
+      facultyName: get("facultyName"),
+      plannedSessions: Number(get("plannedSessions")||0)
+    };
+    if(!rec.program || !rec.semester || !rec.section || !rec.courseCode || !rec.facultyEmail) continue;
+    data.push(rec);
+  }
+
+  state.mapping = data;
+  save(KEYS.MAPPING, state.mapping);
+  $("mappingFile").value="";
+  cancelMappingEdit();
+  renderMappingTable();
+  refreshAllDropdowns();
+  renderDashboard();
+  toast("Uploaded","Mapping updated");
+}
+
+function clearMapping(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can clear mapping."); return; }
+  const ok = confirm("Clear all mapping rows?");
+  if(!ok) return;
+  state.mapping = [];
+  save(KEYS.MAPPING, state.mapping);
+  cancelMappingEdit();
+  renderMappingTable();
+  refreshAllDropdowns();
+  renderDashboard();
+  toast("Cleared","Mapping removed");
+}
+
+function renderMappingTable(){
+  $("mappingCountTag").textContent = `${state.mapping.length} rows`;
+  $("mappingBody").innerHTML = state.mapping.slice(0,400).map(r=>`
+    <tr>
+      <td>${escapeHtml(r.program)}</td>
+      <td>${escapeHtml("Sem "+r.semester)}</td>
+      <td>${escapeHtml(r.section)}</td>
+      <td>${escapeHtml(r.courseCode)}<br><span class="muted">${escapeHtml(r.courseName)}</span></td>
+      <td>${escapeHtml(r.facultyName||r.facultyEmail)}<br><span class="muted">${escapeHtml(r.facultyEmail)}</span></td>
+      <td><span class="tag">${escapeHtml(r.plannedSessions)}</span></td>
+      <td>
+        <button class="btn small" onclick="openMappingEdit('${escapeHtml(r.id)}')">Edit</button>
+        <button class="btn danger small" onclick="deleteMappingRow('${escapeHtml(r.id)}')">Delete</button>
+      </td>
+    </tr>
+  `).join("") || `<tr><td colspan="7" class="muted">No mapping uploaded yet.</td></tr>`;
+}
+
+function openMappingEdit(id){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can edit mapping."); return; }
+  const r = state.mapping.find(x=>x.id===id);
+  if(!r){ toast("Not found","Mapping row not found"); return; }
+  state.__editingMappingId = id;
+
+  $("mappingEditCard").style.display = "block";
+  $("meProgram").value = r.program;
+  $("meSemester").value = r.semester;
+  $("meSection").value = r.section;
+  $("meCourseCode").value = r.courseCode;
+  $("meCourseName").value = r.courseName || "";
+  $("meFacultyEmail").value = r.facultyEmail || "";
+  $("meFacultyName").value = r.facultyName || "";
+  $("mePlanned").value = Number(r.plannedSessions||0);
+
+  $("mappingEditCard").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function cancelMappingEdit(){
+  state.__editingMappingId = null;
+  $("mappingEditCard").style.display = "none";
+}
+
+function saveMappingEdit(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can edit mapping."); return; }
+  const id = state.__editingMappingId;
+  if(!id) return;
+
+  const r = state.mapping.find(x=>x.id===id);
+  if(!r){ toast("Not found","Mapping row not found"); return; }
+
+  const facultyEmail = ($("meFacultyEmail").value||"").trim().toLowerCase();
+  if(!facultyEmail || !facultyEmail.includes("@")){
+    toast("Invalid","Enter a valid faculty email");
+    return;
+  }
+
+  r.courseName = ($("meCourseName").value||"").trim();
+  r.facultyEmail = facultyEmail;
+  r.facultyName = ($("meFacultyName").value||"").trim();
+  r.plannedSessions = Number($("mePlanned").value||0);
+
+  save(KEYS.MAPPING, state.mapping);
+  renderMappingTable();
+  refreshAllDropdowns();
+  renderDashboard();
+  cancelMappingEdit();
+  toast("Saved","Mapping row updated");
+}
+
+function deleteMappingRow(id){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can delete mapping."); return; }
+  const r = state.mapping.find(x=>x.id===id);
+  if(!r) return;
+  const ok = confirm(`Delete mapping for ${r.program} Sem${r.semester} ${r.section} • ${r.courseCode}?`);
+  if(!ok) return;
+
+  // If there are sessions using this course in same program/sem/section, keep sessions but the builder dropdowns will reflect missing mapping.
+  state.mapping = state.mapping.filter(x=>x.id!==id);
+  save(KEYS.MAPPING, state.mapping);
+
+  if(state.__editingMappingId===id) cancelMappingEdit();
+
+  renderMappingTable();
+  refreshAllDropdowns();
+  renderDashboard();
+  toast("Deleted","Mapping row removed");
+}
+
+/* =========================================================
+   BULK SCHEDULE UPLOAD (CSV)
+========================================================= */
+function downloadScheduleTemplate(){
+  const headers = ["date","startTime","endTime","program","semester","section","courseCode","facultyEmail","room","remarks"];
+  const sample = ["2025-01-10","10:30","11:30","PGDM","1","A","MKT101","faculty1@globsyn.edu.in","Room-101","Regular class"];
+  const csv = headers.join(",") + "\n" + sample.map(v=> `"${String(v).replaceAll('"','""')}"`).join(",") + "\n";
+  downloadBlob(csv, "GBS_Schedule_BulkUpload_Template.csv", "text/csv;charset=utf-8");
+  toast("Template downloaded","Fill and upload the Schedule CSV");
+}
+
+async function uploadScheduleCsv(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can bulk upload schedule."); return; }
+  const file = $("bulkFile").files?.[0];
+  if(!file){ toast("No file","Choose a CSV file first."); return; }
+
+  const text = await file.text();
+  const rows = parseCSV(text);
+  if(rows.length < 2){ toast("Invalid","CSV must have header + data"); return; }
+
+  const header = rows[0].map(h => (h||"").trim());
+  const required = ["date","startTime","endTime","program","semester","section","courseCode","facultyEmail","room"];
+  const miss = required.filter(x=>!header.includes(x));
+  if(miss.length){ toast("Template mismatch","Missing header(s): "+miss.join(", ")); return; }
+
+  const idx = {}; header.forEach((h,i)=> idx[h]=i);
+  const getRow = (line,h)=> (line[idx[h]] ?? "").toString().trim();
+
+  const bulkBody = $("bulkBody");
+  bulkBody.innerHTML = "";
+
+  let okCount=0, failCount=0;
+  for(let r=1;r<rows.length;r++){
+    const line = rows[r];
+    const rec = {
+      date: getRow(line,"date"),
+      startTime: getRow(line,"startTime"),
+      endTime: getRow(line,"endTime"),
+      program: getRow(line,"program"),
+      semester: getRow(line,"semester"),
+      section: getRow(line,"section"),
+      courseCode: getRow(line,"courseCode"),
+      facultyEmail: getRow(line,"facultyEmail").toLowerCase(),
+      room: getRow(line,"room"),
+      remarks: getRow(line,"remarks")
+    };
+
+    if(!rec.date || !rec.startTime || !rec.endTime || !rec.program || !rec.semester || !rec.section || !rec.courseCode || !rec.facultyEmail || !rec.room){
+      failCount++;
+      bulkBody.innerHTML += `<tr><td>${r+1}</td><td><span class="tag danger">FAILED</span></td><td>Missing mandatory fields</td></tr>`;
+      continue;
+    }
+    if(timeToMins(rec.endTime) <= timeToMins(rec.startTime)){
+      failCount++;
+      bulkBody.innerHTML += `<tr><td>${r+1}</td><td><span class="tag danger">FAILED</span></td><td>Invalid time range</td></tr>`;
+      continue;
+    }
+
+    // conflict check
+    const cMsg = detectSlotConflict(rec.date, rec.startTime, rec.endTime, rec.facultyEmail, rec.room, null);
+    if(cMsg){
+      failCount++;
+      bulkBody.innerHTML += `<tr><td>${r+1}</td><td><span class="tag warn">CONFLICT</span></td><td>${escapeHtml(cMsg)}</td></tr>`;
+      continue;
+    }
+
+    state.sessions.push({ ...rec, id: genId("S"), createdAt: nowISO() });
+    okCount++;
+    bulkBody.innerHTML += `<tr><td>${r+1}</td><td><span class="tag ok">OK</span></td><td>Added</td></tr>`;
+  }
+
+  save(KEYS.SESSIONS, state.sessions);
+  $("bulkStatus").textContent = `Upload complete: ${okCount} added, ${failCount} failed/conflicts.`;
+  renderSessionsTable();
+  renderDashboard();
+  refreshBuilderCountTag();
+  toast("Bulk upload done", `${okCount} added • ${failCount} failed/conflicts`);
+}
+
+/* =========================================================
+   USERS
+========================================================= */
+async function createUser(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can create users."); return; }
+  const email = ($("uEmail").value||"").trim().toLowerCase();
+  const role = $("uRole").value;
+  const pass = $("uPass").value || "";
+  const pass2 = $("uPass2").value || "";
+
+  if(!email){ toast("Missing","User email is required"); return; }
+  if(!email.includes("@")){ toast("Invalid","Enter a valid email"); return; }
+  if(pass.length < 4){ toast("Weak password","Use at least 4 characters"); return; }
+  if(pass !== pass2){ toast("Mismatch","Passwords do not match"); return; }
+  if(state.users.some(u=>u.email===email)){ toast("Already exists","This email already exists"); return; }
+
+  const passHash = await sha256(pass);
+  state.users.push({ email, role, passHash, createdAt: nowISO() });
+  save(KEYS.USERS, state.users);
+  renderUsers();
+  refreshAllDropdowns();
+  $("uEmail").value=""; $("uPass").value=""; $("uPass2").value=""; $("uRole").value="faculty";
+  toast("User created", `${email} (${role})`);
+}
+function deleteUser(email){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can delete users."); return; }
+  if(email==="corporate@local"){ toast("Not allowed","Default corporate user cannot be deleted."); return; }
+  const ok = confirm(`Delete user ${email}?`);
+  if(!ok) return;
+  state.users = state.users.filter(u=>u.email!==email);
+  save(KEYS.USERS, state.users);
+  renderUsers();
+  refreshAllDropdowns();
+  toast("Deleted","User removed");
+}
+function renderUsers(){
+  $("usersBody").innerHTML = state.users.map(u=>{
+    const roleLabel = u.role==="corporate" ? "Corporate" : (u.role==="registrar" ? "Registrar's Office" : "Faculty");
+    return `
+      <tr>
+        <td>${escapeHtml(u.email)}</td>
+        <td><span class="tag ${u.role==="faculty" ? "warn" : "ok"}">${escapeHtml(roleLabel)}</span></td>
+        <td>${escapeHtml(new Date(u.createdAt).toLocaleString())}</td>
+        <td><button class="btn danger small" onclick="deleteUser('${escapeHtml(u.email)}')">Delete</button></td>
+      </tr>
+    `;
+  }).join("");
+}
+
+/* =========================================================
+   EXPORTS
+========================================================= */
+function downloadBlob(content, filename, mime){
+  const blob = new Blob([content], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportAllSessionsCsv(){
+  const headers = ["id","date","startTime","endTime","program","semester","section","courseCode","facultyEmail","room","remarks"];
+  const lines = [headers.join(",")];
+  for(const s of state.sessions){
+    const row = headers.map(h => `"${String(s[h]??"").replaceAll('"','""')}"`).join(",");
+    lines.push(row);
+  }
+  downloadBlob(lines.join("\n"), "GBS_AllSessions.csv", "text/csv;charset=utf-8");
+  toast("Exported","All sessions CSV downloaded");
+}
+function exportRosterCsv(){
+  const f = getRosterFilters();
+  const sessions = state.sessions.filter(s=>{
+    if(s.date < f.from || s.date > f.to) return false;
+    if(f.program && s.program!==f.program) return false;
+    if(f.semester && String(s.semester)!==String(f.semester)) return false;
+    if(f.section && s.section!==f.section) return false;
+    if(f.facultyEmail && s.facultyEmail!==f.facultyEmail) return false;
+    if(f.room && s.room!==f.room) return false;
+    return true;
+  }).sort((a,b)=> (a.date+a.startTime).localeCompare(b.date+b.startTime));
+
+  const headers = ["date","startTime","endTime","program","semester","section","courseCode","courseName","facultyEmail","facultyName","room","remarks"];
+  const lines = [headers.join(",")];
+  for(const s of sessions){
+    const out = {
+      ...s,
+      courseName: findCourseName(s.courseCode),
+      facultyName: findFacultyName(s.facultyEmail)
+    };
+    const row = headers.map(h => `"${String(out[h]??"").replaceAll('"','""')}"`).join(",");
+    lines.push(row);
+  }
+  downloadBlob(lines.join("\n"), "GBS_Roster.csv", "text/csv;charset=utf-8");
+  toast("Exported","Roster CSV downloaded");
+}
+function exportCompletionCsv(){
+  const rows = computeCompletionRows();
+  const headers = ["program","semester","section","courseCode","courseName","facultyEmail","facultyName","planned","delivered","pct"];
+  const lines = [headers.join(",")];
+  for(const r of rows){
+    const row = headers.map(h => `"${String(r[h]??"").replaceAll('"','""')}"`).join(",");
+    lines.push(row);
+  }
+  downloadBlob(lines.join("\n"), "GBS_CourseCompletion.csv", "text/csv;charset=utf-8");
+  toast("Exported","Completion CSV downloaded");
+}
+
+
+function normScheduleStatus(v){
+  const s = String(v ?? "").trim().toLowerCase();
+  if(!s) return "draft";
+  if(s==="published" || s==="publish") return "published";
+  if(s==="draft") return "draft";
+  if(s.startsWith("pub")) return "published";
+  return "draft";
+}
+function normalizeImportedSchedules(list){
+  const out = [];
+  for(const s of (list || [])){
+    if(!s) continue;
+    const x = { ...s };
+    if(!x.id) x.id = genId("SCH");
+    // legacy compatibility
+    if(!x.key && x.date && (x.semester!==undefined && x.semester!==null)){
+      try{ x.key = getScheduleKey(x.date, String(x.semester)); }catch(e){}
+    }
+    x.semester = String(x.semester ?? "");
+    x.status = normScheduleStatus(x.status);
+    if(!Array.isArray(x.sessions)) x.sessions = [];
+    out.push(x);
+  }
+  return out;
+}
+
+/* =========================================================
+   DEV TOOLS
+========================================================= */
+function wipeAllData(){
+  if(!isCorporate()){ toast("Access denied","Only Corporate can wipe data."); return; }
+  const ok = confirm("This will clear ALL platform data stored in this browser. Continue?");
+  if(!ok) return;
+  Object.values(KEYS).forEach(k=> localStorage.removeItem(k));
+  toast("Wiped","Reloading…");
+  setTimeout(()=> location.reload(), 600);
+}
+function exportAllJson(){
+  if(!(isCorporate() || isRegistrar())){ toast("Access denied","Only Corporate / Registrar can export data."); return; }
+  const obj = {
+    exportedAt: nowISO(),
+    settings: state.settings,
+    masters: state.masters,
+    mapping: state.mapping,
+    sessions: state.sessions,
+    schedules: state.schedules,
+    users: state.users.filter(u=>u.email!=="corporate@local")
+  };
+  downloadBlob(JSON.stringify(obj,null,2), "GBS_SchedulePlatform_Data.json", "application/json");
+  toast("Exported","JSON downloaded");
+}
+async function importAllJson(){
+  if(!(isCorporate() || isRegistrar())){ toast("Access denied","Only Corporate / Registrar can import data."); return; }
+  const f = $("importJsonFile").files?.[0];
+  if(!f){ toast("No file","Choose JSON file first"); return; }
+  const text = await f.text();
+  let obj;
+  try{ obj = JSON.parse(text); }catch{ toast("Invalid","JSON parse failed"); return; }
+
+  if(obj.settings) state.settings = obj.settings;
+  if(obj.masters) state.masters = obj.masters;
+  if(Array.isArray(obj.mapping)) state.mapping = obj.mapping.map(r=> r.id ? r : ({...r,id:genId("M")}));
+  if(Array.isArray(obj.sessions)) state.sessions = obj.sessions;
+
+  // Preserve schedule snapshots and their statuses (Draft/Published) during import
+  if(Array.isArray(obj.schedules)) state.schedules = normalizeImportedSchedules(obj.schedules);
+
+  if(Array.isArray(obj.users)){
+    for(const u of obj.users){
+      if(!u.email || !u.role || !u.passHash) continue;
+      if(!state.users.some(x=>x.email===u.email)) state.users.push(u);
+    }
+  }
+
+  if(!state.masters.classroomMap) state.masters.classroomMap = {};
+  normalizeClassroomMap();
+
+  save(KEYS.SETTINGS, state.settings);
+  save(KEYS.MASTERS, state.masters);
+  save(KEYS.MAPPING, state.mapping);
+  save(KEYS.SESSIONS, state.sessions);
+  save(KEYS.SCHEDULES, state.schedules);
+  save(KEYS.USERS, state.users);
+
+  hydrateSettingsUI();
+  hydrateMastersUI();
+  renderTimingPreview();
+  renderRoomMapTable();
+
+  refreshAllDropdowns();
+  renderMappingTable();
+  renderSessionsTable();
+  renderDashboard();
+  if(state.user && (isCorporate() || isRegistrar())) renderPublishTab();
+  toast("Imported","Data loaded successfully");
+}
+
+
+/* =========================================================
+   SCHEDULE DRAFTS (VIEW & PUBLISH)
+========================================================= */
+function getScheduleKey(date, semester){
+  return `${date}__${semester}`;
+}
+function saveScheduleDraft(){
+  if(!(isCorporate() || isRegistrar())){ toast("Access denied","Only Corporate / Registrar can save draft."); return; }
+  const {date, semester} = getBuilderFilter();
+  if(!date || !semester){ toast("Missing","Choose Date and Semester, then Load Grid."); return; }
+
+  // Snapshot sessions for this date+sem (only those within mapped program/sections)
+  const snap = state.sessions
+    .filter(s => s.date===date && String(s.semester)===String(semester))
+    .map(s => ({...s}));
+
+  // Validate special sessions: Topic + Guest are mandatory
+  const bad = snap.filter(s=> s && (s.specialType || "").toString().trim() && (!String(s.topic||"").trim() || !String(s.guestName||s.facultyName||"").trim()));
+  if(bad.length){
+    toast("Missing details","Topic and Guest Name are mandatory for Non-Academic/Connect sessions. Please re-select the session and enter details.");
+    return;
+  }
+
+  if(!snap.length){
+    toast("Nothing to save","No classes found for this date + semester."); 
+    return;
+  }
+
+  const key = getScheduleKey(date, semester);
+  let existing = state.schedules.find(x => x.key===key);
+  const now = nowISO();
+
+  if(existing){
+    if(existing.status==="published" && isRegistrar()){
+      restricted("Published schedule can\'t be edited by Registrar\'s Office. Please contact Corporate Process.");
+      return;
+    }
+    existing.sessions = snap;
+    existing.updatedAt = now;
+    existing.updatedBy = state.user?.email || "";
+    toast("Updated","Draft updated for the same Date + Semester");
+  } else {
+    state.schedules.unshift({
+      id: genId("SCH"),
+      key,
+      date,
+      semester,
+      status: "draft",
+      createdAt: now,
+      createdBy: state.user?.email || "",
+      updatedAt: now,
+      updatedBy: state.user?.email || "",
+      sessions: snap,
+      meta: {}
+    });
+    toast("Saved","Draft saved. Open View & Publish for PDF / Edit.");
+  }
+
+  save(KEYS.SCHEDULES, state.schedules);
+  renderPublishTab();
+}
+
+function renderPublishTab(){
+  // View & Publish is intended for Corporate + Registrar
+  if(!(isCorporate() || isRegistrar())){ return; }
+
+  // default filter values
+  if(!$("vpFrom").value) $("vpFrom").value = "";
+  const fFrom = ($("vpFrom").value || "").trim();
+  const fTo   = ($("vpTo").value || "").trim();
+  const fSem  = ($("vpSemester").value || "").trim();
+  const q     = ($("vpSearch").value || "").trim().toLowerCase();
+
+  let list = (state.schedules || []).slice();
+
+  // date range filter (inclusive)
+  if(fFrom || fTo){
+    const a = fFrom ? new Date(fFrom).getTime() : -Infinity;
+    const b = fTo ? new Date(fTo).getTime() : Infinity;
+    list = list.filter(s=>{
+      const d = new Date(s.date).getTime();
+      return d>=a && d<=b;
+    });
+  }
+  if(fSem)  list = list.filter(s => String(s.semester)===String(fSem));
+  if(q){
+    list = list.filter(s=>{
+      const txt = `${s.date} sem ${s.semester} ${s.status} ${s.createdBy||""} ${s.updatedBy||""}`.toLowerCase();
+      return txt.includes(q);
+    });
+  }
+
+  $("vpCountTag").textContent = `${list.length} schedules`;
+
+  const body = $("vpBody");
+  body.innerHTML = list.map(s=>{
+    const statusTag = (s.status==="published") ? "tag ok" : "tag warn";
+    const id = escapeHtml(s.id);
+    return `<tr>
+      <td>${escapeHtml(s.date)}</td>
+      <td><span class="tag">${escapeHtml("Sem "+s.semester)}</span></td>
+      <td><span class="${statusTag}">${escapeHtml(s.status || "draft")}</span></td>
+      <td class="muted">${escapeHtml((s.updatedAt || s.createdAt || ""))}</td>
+      <td class="muted">${escapeHtml(s.updatedBy || s.createdBy || "")}</td>
+      <td>
+        <button class="btn small vpAct" data-act="preview" data-id="${id}">Preview</button>
+        <button class="btn small vpAct" data-act="edit" data-id="${id}">Edit</button>
+      </td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="6" class="muted">No saved schedules. Save a draft from Schedule Builder.</td></tr>`;
+
+  // bind row actions (avoid inline onclick issues)
+  body.querySelectorAll("button.vpAct").forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = btn.getAttribute("data-id");
+      const act = btn.getAttribute("data-act");
+      if(act==="preview") vpPreviewSchedule(id);
+      else if(act==="edit") vpEditSchedule(id);
+    };
+  });
+
+  // hide preview by default if no schedule selected
+  if(!window.__vpSelectedId){
+    $("vpPreviewCard").style.display = "none";
+    $("vpGridWrap").innerHTML = `<div class="muted">—</div>`;
+  }
+}
+
+
+function vpPreviewWeek(){
+  // Builds a weekly view from the selected date range + semester (optional)
+  if(!(isCorporate() || isRegistrar())){ return; }
+
+  const fFrom = ($("vpFrom").value || "").trim();
+  const fTo   = ($("vpTo").value || "").trim();
+  const fSem  = ($("vpSemester").value || "").trim();
+
+  if(!fFrom || !fTo){ toast("Missing","Select From Date and To Date to preview weekly schedule."); return; }
+  const a = new Date(fFrom).getTime();
+  const b = new Date(fTo).getTime();
+  if(!(isFinite(a) && isFinite(b))){ toast("Invalid dates","Please select valid dates."); return; }
+  if(a>b){ toast("Invalid range","From Date must be earlier than To Date."); return; }
+
+  // collect sessions from schedules in range (prefers latest snapshot per day+sem)
+  let scheds = (state.schedules || []).filter(s=>{
+    const d = new Date(s.date).getTime();
+    if(d<a || d>b) return false;
+    if(fSem && String(s.semester)!==String(fSem)) return false;
+    return true;
+  });
+
+  if(!scheds.length){ toast("No schedules","No saved drafts/published schedules found in this range."); return; }
+
+  // Aggregate sessions by date (merge all semesters if sem filter empty)
+  const byDate = new Map();
+  for(const sch of scheds){
+    const key = sch.date;
+    if(!byDate.has(key)) byDate.set(key, []);
+    (sch.sessions || []).forEach(s => byDate.get(key).push({...s}));
+  }
+
+  // Remove empty days
+  const dates = [...byDate.keys()].sort();
+  const nonEmptyDates = dates.filter(d => (byDate.get(d)||[]).length>0);
+
+  if(!nonEmptyDates.length){ toast("No classes","No classes found in this date range."); return; }
+
+  window.__vpSelectedId = null;
+  window.__vpWeek = { from:fFrom, to:fTo, semester: (fSem || ""), dates: nonEmptyDates, byDate: byDate };
+
+  $("vpPreviewCard").style.display = "block";
+  const semText = fSem ? `Sem ${fSem}` : "All Semesters";
+  const scope = ($("vpPdfProgram")?.value || "").trim();
+  const visibleDays = nonEmptyDates.filter(d=>{
+    const raw = byDate.get(d) || [];
+    const ss = scope ? raw.filter(s=>s.program===scope) : raw;
+    return ss.length>0;
+  }).length;
+  $("vpPreviewHint").textContent = `Weekly Schedule • ${fFrom} to ${fTo} • ${semText}${scope ? " • "+scope : ""} • Days: ${visibleDays}`;
+
+  try{
+    $("vpGridWrap").innerHTML = buildWeeklyHTML(byDate, nonEmptyDates, ($("vpPdfProgram")?.value || ""));
+  }catch(err){
+    console.error(err);
+    $("vpGridWrap").innerHTML = `<div class="muted">Preview failed. Please open DevTools Console for details.</div>`;
+    toast("Error","Weekly preview rendering failed");
+  }
+
+  // Bind actions to print weekly; publish/delete are disabled for weekly view
+  $("btnVPPrint").onclick = ()=> vpPrintWeekly(byDate, nonEmptyDates, fFrom, fTo, fSem, $("vpPdfProgram")?.value || "");
+  $("btnVPMarkPublished").onclick = ()=> toast("Not available","Publish works per saved schedule (daily).");
+  $("btnVPDelete").onclick = ()=> toast("Not available","Delete works per saved schedule (daily).");
+
+  toast("Preview","Weekly schedule loaded");
+}
+
+function buildWeeklyHTML(byDate, dates, programScope){
+  const scope = (programScope || "").trim();
+  return dates.map(d=>{
+    const rawSessions = byDate.get(d) || [];
+    const sessions = scope ? rawSessions.filter(s=>s.program===scope) : rawSessions;
+    if(!sessions.length) return ""; // skip empty day (esp. after filtering)
+    // derive a semester label if consistent
+    const semSet = unique(sessions.map(s=>String(s.semester||"")).filter(Boolean));
+    const semLabel = semSet.length===1 ? `Sem ${semSet[0]}` : (semSet.length ? `Sem ${semSet.join(",")}` : "");
+    return `
+      <div class="day">
+        <div class="row" style="align-items:flex-end;">
+          <div>
+            <div class="tag ok">${escapeHtml(d)}</div>
+            ${semLabel ? `<div class="muted" style="margin-top:6px;">${escapeHtml(semLabel)}</div>` : ``}
+          </div>
+        </div>
+        <div style="margin-top:10px; overflow:auto;">
+          ${buildGridHTMLFromSessions(sessions, d, semLabel, programScope)}
+        </div>
+      </div>
+    `;
+  }).filter(Boolean).join("");
+}
+
+/* Apply program scope instantly in View & Publish preview (Daily or Weekly) */
+function vpApplyProgramScopeToPreview(){
+  if(!(isCorporate() || isRegistrar())) return;
+  const scope = ($("vpPdfProgram")?.value || "").trim();
+
+  // Daily schedule preview
+  if(window.__vpSelectedId){
+    const sch = (state.schedules||[]).find(s=>s.id===window.__vpSelectedId);
+    if(!sch) return;
+    const scoped = scope ? (sch.sessions||[]).filter(s=>s.program===scope) : (sch.sessions||[]);
+    $("vpPreviewHint").textContent = `Date: ${sch.date} • Semester: ${sch.semester} • Sessions: ${scoped.length}${scope ? " • "+scope : ""}`;
+    try{
+      $("vpGridWrap").innerHTML = buildGridHTMLFromSessions(scoped, sch.date, sch.semester, scope);
+    }catch(err){
+      console.error(err);
+      $("vpGridWrap").innerHTML = `<div class="muted">Preview failed. Please open DevTools Console for details.</div>`;
+      toast("Error","Preview rendering failed");
+    }
+    return;
+  }
+
+  // Weekly preview
+  if(window.__vpWeek && window.__vpWeek.byDate){
+    const wk = window.__vpWeek;
+    const html = buildWeeklyHTML(wk.byDate, wk.dates || [], scope);
+    $("vpGridWrap").innerHTML = html || `<div class="muted">No classes found for the selected program in this range.</div>`;
+
+    const semText = wk.semester ? `Sem ${wk.semester}` : "All Semesters";
+    // count visible days after filter
+    const visibleDays = (wk.dates||[]).filter(d=>{
+      const raw = wk.byDate.get(d) || [];
+      const ss = scope ? raw.filter(s=>s.program===scope) : raw;
+      return ss.length>0;
+    }).length;
+
+    $("vpPreviewHint").textContent = `Weekly Schedule • ${wk.from} to ${wk.to} • ${semText}${scope ? " • "+scope : ""} • Days: ${visibleDays}`;
+    return;
+  }
+}
+
+function vpPreviewSchedule(scheduleId){
+  const sch = state.schedules.find(s=>s.id===scheduleId);
+  if(!sch){ toast("Not found","Schedule not available"); return; }
+  window.__vpSelectedId = scheduleId;
+
+  $("vpPreviewCard").style.display = "block";
+  $("vpPreviewHint").textContent = `Date: ${sch.date} • Semester: ${sch.semester} • Sessions: ${((($("vpPdfProgram")?.value||"").trim()) ? (sch.sessions||[]).filter(s=>s.program===($("vpPdfProgram")?.value||"").trim()) : (sch.sessions||[])).length}${(($("vpPdfProgram")?.value||"").trim()) ? " • "+(($("vpPdfProgram")?.value||"").trim()) : ""}`;
+
+  const _vpScope = ($("vpPdfProgram")?.value || "").trim();
+  const _vpScopedSessions = _vpScope ? (sch.sessions||[]).filter(s=>s.program===_vpScope) : (sch.sessions||[]);
+
+  try{
+    $("vpGridWrap").innerHTML = buildGridHTMLFromSessions(_vpScopedSessions, sch.date, sch.semester, _vpScope);
+  }catch(err){
+    console.error(err);
+    $("vpGridWrap").innerHTML = `<div class="muted">Preview failed. Please open DevTools Console for details.</div>`;
+    toast("Error","Preview rendering failed");
+  }
+
+  // (Re)bind actions to selected schedule
+  $("btnVPPrint").onclick = ()=> vpPrintSchedule(scheduleId, $("vpPdfProgram")?.value || "");
+  $("btnVPMarkPublished").onclick = ()=> vpMarkPublished(scheduleId);
+  $("btnVPDelete").onclick = ()=> vpDeleteSchedule(scheduleId);
+
+  toast("Preview","Schedule loaded");
+}
+
+function vpEditSchedule(scheduleId){
+  const sch = state.schedules.find(s=>s.id===scheduleId);
+  if(!sch){ toast("Not found","Schedule not available"); return; }
+
+  // Restrict editing of published schedules to Corporate only
+  if(sch.status==="published" && !isCorporate()){
+    alert("Published schedule can\'t be edit, please contact to Corporate Process");
+    toast("Not allowed","Published schedule can\'t be edited by this role.");
+    return;
+  }
+
+  // Replace current sessions for that date+sem with the snapshot, then open builder in edit mode
+  const date = sch.date;
+  const semester = String(sch.semester);
+
+  state.sessions = state.sessions.filter(s => !(s.date===date && String(s.semester)===semester));
+  state.sessions.push(...(sch.sessions||[]).map(s=>({...s})));
+  save(KEYS.SESSIONS, state.sessions);
+
+  $("sbDate").value = date;
+  $("sbSemester").value = semester;
+
+  setTab("builder");
+  renderBuilderGrid();
+  toast("Edit Mode","Loaded saved schedule into Schedule Builder");
+}
+
+function vpDeleteSchedule(scheduleId){
+  const sch = state.schedules.find(s=>s.id===scheduleId);
+  if(!sch) return;
+  if(sch.status==="published" && isRegistrar()){
+    restricted("Published schedule can\'t be deleted by Registrar\'s Office. Please contact Corporate Process.");
+    return;
+  }
+  if(!confirm(`Delete schedule draft for ${sch.date} (Sem ${sch.semester})? This cannot be undone.`)) return;
+
+  state.schedules = state.schedules.filter(s=>s.id!==scheduleId);
+  save(KEYS.SCHEDULES, state.schedules);
+
+  window.__vpSelectedId = null;
+  $("vpPreviewCard").style.display = "none";
+  renderPublishTab();
+  toast("Deleted","Schedule removed");
+}
+
+function vpMarkPublished(scheduleId){
+  const sch = state.schedules.find(s=>s.id===scheduleId);
+  if(!sch) return;
+  sch.status = "published";
+  sch.updatedAt = nowISO();
+  sch.updatedBy = state.user?.email || "";
+  save(KEYS.SCHEDULES, state.schedules);
+  renderPublishTab();
+  toast("Published","Status updated to Published");
+}
+
+
+function vpPrintSchedule(scheduleId, programScope){
+  const sch = state.schedules.find(s=>s.id===scheduleId);
+  if(!sch){ toast("Not found","Schedule not available"); return; }
+
+  // Role-based PDF permission
+  if(isRegistrar() && sch.status!=="published"){
+    restricted("Registrar\'s Office can generate PDF only for Published schedules. Please publish it first or login as Corporate.");
+    return;
+  }
+
+  const logoData = localStorage.getItem(KEYS.LOGO) || "";
+  const title = "Globsyn Business School";
+  const progText = programScope ? ` • ${programScope}` : "";
+  const subtitle = `Class Schedule • ${sch.date} • Sem ${sch.semester}${progText}`;
+
+  // Program-wise (or all programs) PDF
+  const scopedSessions = programScope ? (sch.sessions||[]).filter(s=>s.program===programScope) : (sch.sessions||[]);
+
+  const html = `
+  <html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>${title} - ${sch.date}</title>
+    <style>
+      @page { size: A4 portrait; margin: 8mm; }
+      body{ font-family: Arial, sans-serif; padding: 0; }
+      .page{ padding: 10px; }
+      .dayBlock{ margin-bottom: 12mm; }
+      .legend{ page-break-before: always; }
+      table{ page-break-inside:auto; }
+      tr{ page-break-inside:avoid; page-break-after:auto; }
+
+      .head{ display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+      .logo{ width:56px; height:56px; border:1px solid #ddd; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+      .logo img{ width:100%; height:100%; object-fit:contain; }
+      h1{ margin:0; font-size:17px; }
+      .sub{ color:#444; margin-top:2px; font-size:11px; }
+      table{ width:100%; border-collapse:collapse; margin-top:8px; table-layout:fixed; }
+      th,td{ border:1px solid #999; padding:4px; font-size:10.5px; vertical-align:top; word-break:break-word; overflow-wrap:anywhere; }
+      th{ background:#f3f3f3; }
+      .muted{ color:#555; font-size:10px; }
+      @media print{
+        body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; zoom: 0.93; }
+      }
+    </style>
+  </head>
+  <body>
+  <div class="page">
+    <div class="head">
+      <div class="logo">${logoData ? `<img src="${logoData}" />` : `<div class="muted">GBS</div>`}</div>
+      <div>
+        <h1>${title}</h1>
+        <div class="sub">${subtitle}</div>
+      </div>
+    </div>
+
+    <div class="dayBlock">
+      ${buildPrintableGridFromSessions(scopedSessions, sch.date, sch.semester, programScope)}
+    </div>
+    ${buildCourseLegendHTML(scopedSessions)}
+
+    <script>
+      // Print dialog opens; user can Save as PDF
+      window.onload = ()=>{ setTimeout(()=>window.print(), 120); };
+    <\/script>
+  </div>
+  </body>
+  </html>`;
+
+  try{
+    const blob = new Blob([html], {type:"text/html"});
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, "_blank");
+    if(!w){ toast("Blocked","Please allow pop-ups for PDF generation."); return; }
+    // Clean up URL later
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 10000);
+  }catch(err){
+    console.error(err);
+    toast("Failed","PDF window could not be opened. Use browser Print to PDF from Preview.");
+  }
+}
+
+function vpPrintWeekly(byDate, dates, from, to, sem, programScope){
+  if(isRegistrar()){
+    const missing = (dates||[]).filter(d=> {
+      // weekly preview uses selected semester filter; if sem is blank, require any published schedule for that date
+      if(sem) return !isDateSemPublished(d, sem);
+      return !(state.schedules||[]).some(s=> s && s.date===d && s.status==="published");
+    });
+    if(missing.length){
+      restricted("Registrar\'s Office can generate Weekly PDF only when included dates are Published. Missing Published dates: "+missing.join(", "));
+      return;
+    }
+  }
+  if(isRegistrar()){
+    const missing = (dates||[]).filter(d=> !isDateSemPublished(d, sem || ""));
+    if(missing.length){
+      restricted("Registrar\'s Office can generate Weekly PDF only when all included dates are Published for the selected semester. Missing Published dates: "+missing.join(", "));
+      return;
+    }
+  }
+  const logoData = localStorage.getItem(KEYS.LOGO) || "";
+  const title = "Globsyn Business School";
+  const semText = sem ? `Sem ${sem}` : "All Semesters";
+  const progText = programScope ? ` • ${programScope}` : "";
+  // NOTE: Date range removed from PDF header (requested)
+  const subtitle = `Weekly Class Schedule • ${semText}${progText}`;
+
+  const blocks = dates.map(d=>{
+    const rawSessions = byDate.get(d) || [];
+    const sessions = programScope ? rawSessions.filter(s=>s.program===programScope) : rawSessions;
+    if(!sessions.length) return "";
+    return `
+      <h2 style="margin:16px 0 6px 0; font-size:14px;">${escapeHtml(d)}</h2>
+      ${buildPrintableGridFromSessions(sessions, d, sem || "", programScope)}
+    `;
+  }).join("");
+
+  const allSessions = (dates||[]).flatMap(d=> {
+    const raw = (byDate.get(d)||[]);
+    return programScope ? raw.filter(s=>s.program===programScope) : raw;
+  });
+
+  const html = `
+  <html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>${title} - Weekly Schedule</title>
+    <style>
+      @page { size: A4 portrait; margin: 8mm; }
+      body{ font-family: Arial, sans-serif; padding: 0; }
+      .page{ padding: 10px; }
+      .day{ margin-bottom: 12mm; }
+      .legend{ page-break-before: always; }
+      table{ page-break-inside:auto; }
+      tr{ page-break-inside:avoid; page-break-after:auto; }
+
+      .head{ display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+      .logo{ width:56px; height:56px; border:1px solid #ddd; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+      .logo img{ width:100%; height:100%; object-fit:contain; }
+      h1{ margin:0; font-size:18px; }
+      .sub{ color:#444; margin-top:2px; font-size:12px; }
+      table{ width:100%; border-collapse:collapse; margin-top:8px; table-layout:fixed; }
+      th,td{ border:1px solid #999; padding:4px; font-size:10px; vertical-align:top; word-break:break-word; overflow-wrap:anywhere; }
+      th{ background:#f3f3f3; }
+      .muted{ color:#555; font-size:10px; }
+      @media print {
+        body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; zoom: 0.93; }
+      }
+      /* Keep the weekly schedule on a single page as much as possible (legend can spill to next page) */
+    </style>
+  </head>
+  <body>
+  <div class="page">
+    <div class="head">
+      <div class="logo">${logoData ? `<img src="${logoData}" />` : `<div class="muted">GBS</div>`}</div>
+      <div>
+        <h1>${title}</h1>
+        <div class="sub">${subtitle}</div>
+      </div>
+    </div>
+
+    ${blocks}
+    ${buildCourseLegendHTML(allSessions)}
+
+    <script>
+      window.onload = ()=>{ setTimeout(()=>window.print(), 150); };
+    <\/script>
+  </div>
+  </body>
+  </html>`;
+
+  try{
+    const blob = new Blob([html], {type:"text/html"});
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, "_blank");
+    if(!w){ toast("Blocked","Please allow pop-ups for PDF generation."); return; }
+    setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 12000);
+  }catch(err){
+    console.error(err);
+    toast("Failed","Could not open PDF window. Use browser Print to PDF from Preview.");
+  }
+}
+
+
+function buildGridHTMLFromSessions(sessions, date, semester, programScope){
+  // Uses the same slot model and roomMap filter as Schedule Builder.
+  const slots = buildDaySlots();
+  const map = state.masters.classroomMap || {};
+  const rowPairs = [];
+  if(programScope){
+    const secsObj = map[programScope] || {};
+    for(const sec of Object.keys(secsObj)){
+      rowPairs.push([programScope, sec]);
+    }
+  } else {
+    for(const p of Object.keys(map)){
+      const secsObj = map[p] || {};
+      for(const sec of Object.keys(secsObj)){
+        rowPairs.push([p, sec]);
+      }
+    }
+  }
+  rowPairs.sort((a,b)=> (a[0]===b[0] ? String(a[1]).localeCompare(String(b[1])) : String(a[0]).localeCompare(String(b[0]))));
+
+  const head = `<thead><tr>
+    <th>Program</th><th>Section</th><th>Room</th>
+    ${slots.map(sl=> sl.type==="lunch" ? `<th>Lunch</th>` : `<th>${escapeHtml(sl.label)}<div class="muted">${escapeHtml(sl.start)}-${escapeHtml(sl.end)}</div></th>`).join("")}
+  </tr></thead>`;
+
+  const byCell = new Map(); // key program|sec|start|end -> session
+  (sessions||[]).forEach(s=>{
+    const k = `${s.program}||${s.section}||${s.startTime}||${s.endTime}`;
+    byCell.set(k, s);
+  });
+
+  const body = rowPairs.map(([p,sec])=>{
+    const room = defaultRoomFor(p, sec);
+    const tds = slots.map(sl=>{
+      if(sl.type==="lunch") return `<td class="lunchCol"><span class="tag warn">Lunch</span></td>`;
+      const k = `${p}||${sec}||${sl.start}||${sl.end}`;
+      const s = byCell.get(k);
+      if(!s) return `<td class="muted">—</td>`;
+      const fac = sessionFacultyLabel(s);
+      return `<td><b>${escapeHtml(sessionCourseLabel(s))}</b><div class="muted">${escapeHtml(fac)}</div></td>`;
+    }).join("");
+    return `<tr>
+      <td>${escapeHtml(p)}</td>
+      <td><span class="tag">${escapeHtml(sec)}</span></td>
+      <td><span class="tag ok">${escapeHtml(room)}</span></td>
+      ${tds}
+    </tr>`;
+  }).join("");
+
+  return `<table class="schedTable">${head}<tbody>${body}</tbody></table>`;
+}
+
+function buildCourseLegendHTML(sessions){
+  const used = new Set();
+  (sessions||[]).forEach(s=>{ if(s && s.courseCode) used.add(String(s.courseCode).trim()); });
+  const rows = [...used].sort((a,b)=>a.localeCompare(b)).map(code=>{
+    const name = findCourseName(code) || "";
+    return `<tr><td style="width:120px;"><b>${escapeHtml(code)}</b></td><td>${escapeHtml(name)}</td></tr>`;
+  }).join("");
+  if(!rows) return "";
+  return `
+    <div class="legend">
+      <h2 style="margin:0 0 8px 0; font-size:14px;">Course Code Legend</h2>
+      <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <thead><tr><th style="border:1px solid #999; background:#f3f3f3; padding:6px; font-size:11px;">Course Code</th><th style="border:1px solid #999; background:#f3f3f3; padding:6px; font-size:11px;">Full Course Name</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="muted" style="margin-top:6px;">Only courses appearing in the schedule are listed here.</div>
+    </div>`;
+}
+
+function buildPrintableGridFromSessions(sessions, date, semester, programScope){
+  // Reuse grid HTML but without app-specific classes
+  const slots = buildDaySlots();
+  const map = state.masters.classroomMap || {};
+  const rowPairs = [];
+  if(programScope){
+    const secsObj = map[programScope] || {};
+    for(const sec of Object.keys(secsObj)){
+      rowPairs.push([programScope, sec]);
+    }
+  } else {
+    for(const p of Object.keys(map)){
+      const secsObj = map[p] || {};
+      for(const sec of Object.keys(secsObj)){
+        rowPairs.push([p, sec]);
+      }
+    }
+  }
+  rowPairs.sort((a,b)=> (a[0]===b[0] ? String(a[1]).localeCompare(String(b[1])) : String(a[0]).localeCompare(String(b[0]))));
+
+  const byCell = new Map();
+  (sessions||[]).forEach(s=>{
+    const k = `${s.program}||${s.section}||${s.startTime}||${s.endTime}`;
+    byCell.set(k, s);
+  });
+
+  let html = `<table><thead><tr><th>Program</th><th>Section</th><th>Room</th>`;
+  html += slots.map(sl=> sl.type==="lunch" ? `<th>Lunch</th>` : `<th>${escapeHtml(sl.label)}<div class="muted">${escapeHtml(sl.start)}-${escapeHtml(sl.end)}</div></th>`).join("");
+  html += `</tr></thead><tbody>`;
+
+  for(const [p,sec] of rowPairs){
+    const room = defaultRoomFor(p, sec);
+    html += `<tr><td>${escapeHtml(p)}</td><td>${escapeHtml(sec)}</td><td>${escapeHtml(room)}</td>`;
+    for(const sl of slots){
+      if(sl.type==="lunch"){ html += `<td>Lunch</td>`; continue; }
+      const k = `${p}||${sec}||${sl.start}||${sl.end}`;
+      const s = byCell.get(k);
+      if(!s){ html += `<td></td>`; continue; }
+      const fac = sessionFacultyLabel(s);
+      html += `<td><b>${escapeHtml(sessionCourseLabel(s))}</b><div class="muted">${escapeHtml(fac)}</div></td>`;
+    }
+    html += `</tr>`;
+  }
+
+  html += `</tbody></table>`;
+  return html;
+}
+/* =========================================================
+   BOOT
+========================================================= */
+(async ()=>{
+  // Pull latest shared state from Supabase, then boot UI
+  await syncDownAll();
+  startRealtime();
+  init();
+  await updateOnlineBadge();
+})();
+</script>
+</body>
+</html>
